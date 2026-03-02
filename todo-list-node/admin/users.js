@@ -1,11 +1,13 @@
-const db = require('../fw/db');
+const db = require("../fw/db");
 
 async function getHtml() {
-    let conn = await db.connectDB();
-    let html = '';
-    let [result,fields] = await conn.query("SELECT users.ID, users.username, users.password, roles.title FROM users inner join permissions on users.ID = permissions.userID inner join roles on permissions.roleID = roles.ID order by username");
+  let conn = await db.connectDB();
+  let html = "";
+  let [result, fields] = await conn.query(
+    "SELECT users.ID, users.username, users.password, roles.title FROM users inner join permissions on users.ID = permissions.userID inner join roles on permissions.roleID = roles.ID order by username",
+  );
 
-    html += `
+  html += `
     <h2>User List</h2>
 
     <table>
@@ -15,14 +17,23 @@ async function getHtml() {
             <th>Role</th>
         </tr>`;
 
-    result.map(function (record) {
-        html += `<tr><td>`+record.ID+`</td><td>`+record.username+`</td><td>`+record.title+`</td><input type='hidden' name='password' value='`+record.password+`' /></tr>`;
-    });
+  result.map(function (record) {
+    html +=
+      `<tr><td>` +
+      record.ID +
+      `</td><td>` +
+      record.username +
+      `</td><td>` +
+      record.title +
+      `</td><input type='hidden' name='password' value='` +
+      record.password +
+      `' /></tr>`;
+  });
 
-    html += `
+  html += `
     </table>`;
 
-    return html;
+  return html;
 }
 
 module.exports = { html: getHtml() };

@@ -1,5 +1,6 @@
 function getHtml(req) {
-    return `
+  return (
+    `
 <section id="search">
     <h2>Search</h2>
     <form id="form" method="post" action="">
@@ -31,7 +32,9 @@ function getHtml(req) {
             submitHandler: function (form) {
                 provider = $("#searchurl").val();
                 terms = $("#terms").val();
-                userid = `+req.cookies.userid+`;
+                userid = ` +
+    req.cookies.userid +
+    `;
                 $("#msg").show();
                 $("#result").html("");
                 $.post("search", { provider: provider, terms: terms, userid: userid }, function(data){
@@ -46,9 +49,10 @@ function getHtml(req) {
         });
     });
     </script>
-</section>`;
+</section>`
+  );
 }
 
 module.exports = {
-    html: getHtml
-}
+  html: getHtml,
+};

@@ -1,8 +1,8 @@
-const login = require('../login');
-const db = require('../fw/db');
+const login = require("../login");
+const db = require("../fw/db");
 
 async function getHtml(req) {
-    let content = `<!DOCTYPE html>
+  let content = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,37 +16,40 @@ async function getHtml(req) {
     <header>
         <div>This is the insecure m183 test app</div>`;
 
-    let id = 0;
-    let roleid = 0;
-    if(req.cookies.userid !== undefined && req.cookies.userid !== '') {
-        id = req.cookies.userid;
-        let stmt = await db.executeStatement("select users.id userid, roles.id roleid, roles.title rolename from users inner join permissions on users.id = permissions.userid inner join roles on permissions.roleID = roles.id where userid = "+id);
-        console.log(stmt);
+  let id = 0;
+  let roleid = 0;
+  if (req.cookies.userid !== undefined && req.cookies.userid !== "") {
+    id = req.cookies.userid;
+    let stmt = await db.executeStatement(
+      "select users.id userid, roles.id roleid, roles.title rolename from users inner join permissions on users.id = permissions.userid inner join roles on permissions.roleID = roles.id where userid = " +
+        id,
+    );
+    console.log(stmt);
 
-        // load role from db
-        if(stmt.length > 0) {
-            roleid = stmt[0].roleid;
-        }
-
-        content += `
-        <nav>
-            <ul>
-                <li><a href="/">Tasks</a></li>`;
-        if(roleid === 1) {
-            content += `
-                <li><a href="/admin/users">User List</a></li>`;
-        }
-        content += `
-                <li><a href="/logout">Logout</a></li>
-            </ul>
-        </nav>`;
+    // load role from db
+    if (stmt.length > 0) {
+      roleid = stmt[0].roleid;
     }
 
     content += `
+        <nav>
+            <ul>
+                <li><a href="/">Tasks</a></li>`;
+    if (roleid === 1) {
+      content += `
+                <li><a href="/admin/users">User List</a></li>`;
+    }
+    content += `
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </nav>`;
+  }
+
+  content += `
     </header>
     <main>`;
 
-    return content;
+  return content;
 }
 
 module.exports = getHtml;
