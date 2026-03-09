@@ -20,8 +20,6 @@ Detached: `docker compose up -d`
 
 <http://localhost:80>
 
-## Hints
-
 ## Users
 
 Admin
