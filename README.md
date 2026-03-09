@@ -21,3 +21,19 @@ Detached: `docker compose up -d`
 <http://localhost:80>
 
 ## Hints
+
+Maybe some
+
+## Users
+
+Admin
+
+username: `admin1`
+
+password: `Awesome.Pass34`
+
+User
+
+username: `user1`
+
+password: `Amazing.Pass23`
