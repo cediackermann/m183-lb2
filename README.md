@@ -22,8 +22,6 @@ Detached: `docker compose up -d`
 
 ## Hints
 
-Maybe some
-
 ## Users
 
 Admin
