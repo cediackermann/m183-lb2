@@ -40,7 +40,7 @@
 
    [x] Sensitive Data Exposure: Password as a hidden field in HTML (users.js)
 
-   [ ] Insecure Transport: Credentials sent via URL/GET method (login.js)
+   [x] Insecure Transport: Credentials sent via URL/GET method (login.js)
 
    [ ] Information Disclosure: Sensitive info in console.log (index.js, tasklist.js)
 

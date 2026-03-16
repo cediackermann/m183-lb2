@@ -69,8 +69,15 @@ app.get("/edit", async (req, res) => {
   }
 });
 
-// Login-Seite anzeigen
+// Login-Seite anzeigen (GET remains for showing the form)
 app.get("/login", async (req, res) => {
+  let content = await login.handleLogin(req, res);
+  let html = await wrapContent(content.html, req);
+  res.send(html);
+});
+
+// FIX: Add this POST route to handle the actual login submission
+app.post("/login", async (req, res) => {
   let content = await login.handleLogin(req, res);
 
   if (content.user.userid !== 0) {
