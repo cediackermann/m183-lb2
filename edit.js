@@ -1,4 +1,5 @@
 const db = require("./fw/db");
+const { sanitizeHtml } = require("./fw/utils");
 
 async function getHtml(req) {
   let title = "";
@@ -28,12 +29,12 @@ async function getHtml(req) {
     `
     <form id="form" method="post" action="savetask">
         <input type="hidden" name="id" value="` +
-    taskId +
+    sanitizeHtml(taskId) +
     `" />
         <div class="form-group">
             <label for="title">Description</label>
             <input type="text" class="form-control size-medium" name="title" id="title" value="` +
-    title +
+    sanitizeHtml(title) +
     `">
         </div>
         <div class="form-group">
@@ -45,11 +46,11 @@ async function getHtml(req) {
     html += `<span>` + options[1] + `</span>`;
     html +=
       `<option value='` +
-      options[i].toLowerCase() +
+      sanitizeHtml(options[i].toLowerCase()) +
       `' ` +
       selected +
       `>` +
-      options[i] +
+      sanitizeHtml(options[i]) +
       `</option>`;
   }
 

@@ -1,4 +1,5 @@
 const db = require("../fw/db");
+const { sanitizeHtml } = require("../fw/utils");
 
 async function getHtml(req) {
   let html = `
@@ -24,10 +25,10 @@ async function getHtml(req) {
       row.ID +
       `</td>
                 <td class="wide">` +
-      row.title +
+      sanitizeHtml(row.title) +
       `</td>
                 <td>` +
-      ucfirst(row.state) +
+      sanitizeHtml(ucfirst(row.state)) +
       `</td>
                 <td>
                     <a href="edit?id=` +

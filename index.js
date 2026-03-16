@@ -1,15 +1,16 @@
 const tasklist = require("./user/tasklist");
 const bgSearch = require("./user/backgroundsearch");
+const { sanitizeHtml } = require("./fw/utils");
 
 async function getHtml(req) {
   let taskListHtml = await tasklist.html(req);
   return (
     `<h2>Welcome, ` +
-    req.cookies.username +
+    sanitizeHtml(req.cookies.username) +
     `!</h2>` +
-    taskListHtml +
+    sanitizeHtml(taskListHtml) +
     "<hr />" +
-    bgSearch.html(req)
+    sanitizeHtml(bgSearch.html(req))
   );
 }
 
