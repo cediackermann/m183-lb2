@@ -24,18 +24,18 @@ async function connectDB() {
       } else {
         throw new Error(
           "Failed to connect to database after multiple retries: " +
-            error.message,
+          error.message,
         );
       }
     }
   }
 }
 
-async function executeStatement(statement) {
+async function executeStatement(statement, params = []) {
   let conn;
   try {
     conn = await connectDB();
-    const [results, fields] = await conn.query(statement);
+    const [results, fields] = await conn.query(statement, params);
     return results;
   } catch (error) {
     console.error("Error executing statement:", error.message);

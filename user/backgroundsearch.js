@@ -1,6 +1,8 @@
+const { sanitizeHtml } = require("../fw/utils");
+
 function getHtml(req) {
-  return (
-    `
+    return (
+        `
 <section id="search">
     <h2>Search</h2>
     <form id="form" method="post" action="">
@@ -33,8 +35,8 @@ function getHtml(req) {
                 provider = $("#searchurl").val();
                 terms = $("#terms").val();
                 userid = ` +
-    req.cookies.userid +
-    `;
+        sanitizeHtml(req.cookies.userid) +
+        `;
                 $("#msg").show();
                 $("#result").html("");
                 $.post("search", { provider: provider, terms: terms, userid: userid }, function(data){
@@ -50,9 +52,9 @@ function getHtml(req) {
     });
     </script>
 </section>`
-  );
+    );
 }
 
 module.exports = {
-  html: getHtml,
+    html: getHtml,
 };

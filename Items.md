@@ -1,24 +1,24 @@
 1. Injection & Cross-Site Scripting (XSS)
 
-   [ ] SQL Injection: Session validation (header.js)
+   [x] SQL Injection: Session validation (header.js)
 
-   [ ] SQL Injection: Loading the task list (tasklist.js)
+   [x] SQL Injection: Loading the task list (tasklist.js)
 
-   [ ] SQL Injection: Editing tasks (edit.js)
+   [x] SQL Injection: Editing tasks (edit.js)
 
-   [ ] SQL Injection: Saving tasks (savetask.js)
+   [x] SQL Injection: Saving tasks (savetask.js)
 
-   [ ] SQL Injection: Search function (index.js)
+   [x] SQL Injection: Search function (index.js)
 
-   [ ] Stored XSS: Task title and status (tasklist.js)
+   [x] Stored XSS: Task title and status (tasklist.js)
 
-   [ ] Reflected XSS: Edit form (edit.js)
+   [x] Reflected XSS: Edit form (edit.js)
 
-   [ ] XSS: User greeting (index.js)
+   [x] XSS: User greeting (index.js)
 
-   [ ] XSS: Generated HTML search results (index.js)
+   [x] XSS: Generated HTML search results (index.js)
 
-   [ ] XSS: Unfiltered user ID in inline script (backgroundsearch.js)
+   [x] XSS: Unfiltered user ID in inline script (backgroundsearch.js)
 
 2. Broken Access Control & Session Management
 
