@@ -13,10 +13,8 @@ async function getHtml(req) {
             </tr>
     `;
 
-  let conn = await db.connectDB();
-  let [result, fields] = await conn.query(
-    "select ID, title, state from tasks where UserID = " + req.cookies.userid,
-  );
+  const query = "select ID, title, state from tasks where UserID = ?"
+  let result = await db.executeStatement(query, [req.cookies.userid]);
   console.log(result);
   result.forEach(function (row) {
     html +=

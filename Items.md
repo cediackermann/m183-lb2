@@ -1,12 +1,12 @@
 1. Injection & Cross-Site Scripting (XSS)
 
-   [ ] SQL Injection: Session validation (header.js)
+   [x] SQL Injection: Session validation (header.js)
 
-   [ ] SQL Injection: Loading the task list (tasklist.js)
+   [x] SQL Injection: Loading the task list (tasklist.js)
 
-   [ ] SQL Injection: Editing tasks (edit.js)
+   [x] SQL Injection: Editing tasks (edit.js)
 
-   [ ] SQL Injection: Saving tasks (savetask.js)
+   [x] SQL Injection: Saving tasks (savetask.js)
 
    [ ] SQL Injection: Search function (index.js)
 

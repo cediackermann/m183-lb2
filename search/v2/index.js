@@ -9,12 +9,10 @@ async function search(req) {
   let terms = req.query.terms;
   let result = "";
 
+  const query = "select ID, title, state from tasks where userID = ? and title like ?"
   let stmt = await db.executeStatement(
-    "select ID, title, state from tasks where userID = " +
-      userid +
-      " and title like '%" +
-      terms +
-      "%'",
+    query,
+    [userid, "%" + terms + "%"],
   );
   if (stmt.length > 0) {
     stmt.forEach(function (row) {
