@@ -26,9 +26,6 @@ async function handleLogin(req, res) {
 }
 
 function startUserSession(res, user) {
-  console.log(
-    "login valid... start user session now for userid " + user.userid,
-  );
   res.cookie("username", user.username);
   res.cookie("userid", user.userid);
   res.redirect("/");
@@ -54,8 +51,6 @@ async function validateLogin(username, password) {
       let db_password = results[0].password;
 
       const match = await bcrypt.compare(password, db_password);
-      console.log(await bcrypt.hash(password, 10))
-      console.log(db_password)
       // Verify the password
       if (match) {
         result.userId = db_id;
@@ -69,8 +64,6 @@ async function validateLogin(username, password) {
       // Username does not exist
       result.msg = "Username does not exist";
     }
-
-    console.log(results); // results contains rows returned by server
     //console.log(fields); // fields contains extra meta data about results, if available
   } catch (err) {
     console.log(err);

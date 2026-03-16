@@ -141,8 +141,6 @@ async function wrapContent(content, req) {
 
 function activeUserSession(req) {
   // check if cookie with user information ist set
-  console.log("in activeUserSession");
-  console.log(req.cookies);
   return (
     req.cookies !== undefined &&
     req.cookies.username !== undefined &&

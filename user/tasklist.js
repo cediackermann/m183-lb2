@@ -16,7 +16,6 @@ async function getHtml(req) {
 
   const query = "select ID, title, state from tasks where UserID = ?"
   let result = await db.executeStatement(query, [req.cookies.userid]);
-  console.log(result);
   result.forEach(function (row) {
     html +=
       `

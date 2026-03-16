@@ -42,7 +42,7 @@
 
    [x] Insecure Transport: Credentials sent via URL/GET method (login.js)
 
-   [ ] Information Disclosure: Sensitive info in console.log (index.js, tasklist.js)
+   [x] Information Disclosure: Sensitive info in console.log (index.js, tasklist.js)
 
 4. System & Infrastructure Security
 
