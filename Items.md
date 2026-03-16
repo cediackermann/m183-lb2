@@ -38,7 +38,7 @@
 
    [x] Plaintext Passwords: Stored unencrypted in the database (login.js)
 
-   [ ] Sensitive Data Exposure: Password as a hidden field in HTML (users.js)
+   [x] Sensitive Data Exposure: Password as a hidden field in HTML (users.js)
 
    [ ] Insecure Transport: Credentials sent via URL/GET method (login.js)
 
