@@ -36,7 +36,7 @@
 
 3. Broken Cryptography & Data Exposure
 
-   [ ] Plaintext Passwords: Stored unencrypted in the database (login.js)
+   [x] Plaintext Passwords: Stored unencrypted in the database (login.js)
 
    [ ] Sensitive Data Exposure: Password as a hidden field in HTML (users.js)
 
