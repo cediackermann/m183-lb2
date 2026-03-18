@@ -6,7 +6,7 @@ async function getHtml(req) {
   let taskListHtml = await tasklist.html(req);
   return (
     `<h2>Welcome, ` +
-    sanitizeHtml(req.cookies.username) +
+    sanitizeHtml(req.session.username) +
     `!</h2>` +
     sanitizeHtml(taskListHtml) +
     "<hr />" +

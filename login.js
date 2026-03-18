@@ -25,10 +25,23 @@ async function handleLogin(req, res) {
   return { html: msg + getHtml(), user: user };
 }
 
-function startUserSession(res, user) {
-  res.cookie("username", user.username);
-  res.cookie("userid", user.userid);
-  res.redirect("/");
+function startUserSession(req, res, user) {
+  req.session.regenerate((err) => {
+    if (err) {
+      return res.redirect("/login");
+    }
+
+    req.session.loggedin = true;
+    req.session.userid = user.userid;
+    req.session.username = user.username;
+
+    req.session.save((err) => {
+      if (err) {
+        return res.redirect("/login");
+      }
+      res.redirect("/");
+    });
+  });
 }
 
 async function validateLogin(username, password) {

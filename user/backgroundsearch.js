@@ -35,7 +35,7 @@ function getHtml(req) {
                 provider = $("#searchurl").val();
                 terms = $("#terms").val();
                 userid = ` +
-        sanitizeHtml(req.cookies.userid) +
+        sanitizeHtml(req.session.userid) +
         `;
                 $("#msg").show();
                 $("#result").html("");

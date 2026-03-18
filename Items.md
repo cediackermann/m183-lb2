@@ -22,17 +22,17 @@
 
 2. Broken Access Control & Session Management
 
-   [ ] Missing Access Control: No server-side checks for admin routes (index.js)
+   [x] Missing Access Control: No server-side checks for admin routes (app.js)
 
-   [ ] IDOR: Insecure Direct Object Reference in task updates (savetask.js)
+   [x] IDOR: Insecure Direct Object Reference in task updates (savetask.js)
 
-   [ ] Session Manipulation: Fake-Login via Cookies (login.js, index.js)
+   [x] Session Manipulation: Fake-Login via Cookies (login.js, app.js)
 
-   [ ] Insecure Session Management: Unused express-session middleware (index.js)
+   [x] Insecure Session Management: Unused express-session middleware (app.js)
 
-   [ ] Hardcoded Secret: Session secret key exposed in code (index.js)
+   [x] Hardcoded Secret: Session secret key exposed in code (app.js)
 
-   [ ] Missing Cookie Flags: Missing Secure and HttpOnly flags (login.js, index.js)
+   [x] Missing Cookie Flags: Missing Secure and HttpOnly flags (login.js, app.js)
 
 3. Broken Cryptography & Data Exposure
 

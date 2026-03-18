@@ -3,14 +3,19 @@ const db = require("./fw/db");
 async function getHtml(req) {
   let html = "";
   let taskId = "";
+  let userid = req.session.userid;
 
   // see if the id exists in the database
   if (req.body.id !== undefined && req.body.id.length !== 0) {
     taskId = req.body.id;
+    // We add the userID check here to prevent IDOR
     let stmt = await db.executeStatement(
-      "select ID, title, state from tasks where ID = " + taskId,
+        "SELECT ID FROM tasks WHERE ID = ? AND userID = ?",
+        [taskId, userid]
     );
+
     if (stmt.length === 0) {
+      // If task doesn't exist OR doesn't belong to the user, reset taskId
       taskId = "";
     }
   }
@@ -18,26 +23,16 @@ async function getHtml(req) {
   if (req.body.title !== undefined && req.body.state !== undefined) {
     let state = req.body.state;
     let title = req.body.title;
-    let userid = req.cookies.userid;
 
     if (taskId === "") {
-      stmt = db.executeStatement(
-        "insert into tasks (title, state, userID) values ('" +
-          title +
-          "', '" +
-          state +
-          "', '" +
-          userid +
-          "')",
+      await db.executeStatement(
+          "INSERT INTO tasks (title, state, userID) VALUES (?, ?, ?)",
+          [title, state, userid]
       );
     } else {
-      stmt = db.executeStatement(
-        "update tasks set title = '" +
-          title +
-          "', state = '" +
-          state +
-          "' where ID = " +
-          taskId,
+      await db.executeStatement(
+          "UPDATE tasks SET title = ?, state = ? WHERE ID = ? AND userID = ?",
+          [title, state, taskId, userid]
       );
     }
 

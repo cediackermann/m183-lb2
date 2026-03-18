@@ -11,24 +11,55 @@ const editTask = require("./edit");
 const saveTask = require("./savetask");
 const search = require("./search");
 const searchProvider = require("./search/v2/index");
+const db = require("./fw/db");
+require("dotenv").config();
 
 const app = express();
 const PORT = 3000;
 
-// Middleware für Session-Handling
-app.use(
-  session({
-    secret: "secret",
-    resave: true,
-    saveUninitialized: true,
-  }),
-);
+if (!process.env.SESSION_SECRET) {
+  throw new Error("Missing session secret");
+}
 
 // Middleware für Body-Parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
+
+// Middleware für Session-Handling
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "development",
+      sameSite: "strict"
+    }
+  }),
+);
+
+app.use((req, res, next) => {
+  if (req.session && req.session.loggedin) {
+    req.cookies.userid = req.session.userid;
+    req.cookies.username = req.session.username;
+  } else {
+    delete req.cookies.userid;
+    delete req.cookies.username;
+  }
+  next();
+});
+
+async function isAdmin(req) {
+  if (!activeUserSession(req)) return false;
+
+  const query = "SELECT roleID FROM permissions WHERE userID =?";
+  const result = await db.executeStatement(query, [req.session.userid]);
+
+  return result.length > 0 && result[0].roleID === 1;
+}
 
 // Routen
 app.get("/", async (req, res) => {
@@ -51,11 +82,11 @@ app.post("/", async (req, res) => {
 
 // edit task
 app.get("/admin/users", async (req, res) => {
-  if (activeUserSession(req)) {
+  if (await isAdmin(req)) {
     let html = await wrapContent(await adminUser.html, req);
     res.send(html);
   } else {
-    res.redirect("/");
+    res.status(403).send("403 Forbidden: You do not have permission to view this page.");
   }
 });
 
@@ -81,8 +112,7 @@ app.post("/login", async (req, res) => {
   let content = await login.handleLogin(req, res);
 
   if (content.user.userid !== 0) {
-    // login was successful... set cookies and redirect to /
-    login.startUserSession(res, content.user);
+    login.startUserSession(req, res, content.user);
   } else {
     // login unsuccessful or not made jet... display login form
     let html = await wrapContent(content.html, req);
@@ -93,8 +123,7 @@ app.post("/login", async (req, res) => {
 // Logout
 app.get("/logout", (req, res) => {
   req.session.destroy();
-  res.cookie("username", "");
-  res.cookie("userid", "");
+  res.clearCookie("connect.sid");
   res.redirect("/login");
 });
 
@@ -141,9 +170,5 @@ async function wrapContent(content, req) {
 
 function activeUserSession(req) {
   // check if cookie with user information ist set
-  return (
-    req.cookies !== undefined &&
-    req.cookies.username !== undefined &&
-    req.cookies.username !== ""
-  );
+  return req.session && req.session.loggedin === true;
 }

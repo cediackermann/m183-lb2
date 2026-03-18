@@ -11,6 +11,7 @@
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.6",
     "dompurify": "^3.3.3",
+    "dotenv": "^17.3.1",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "jsdom": "^29.0.0",
