@@ -31,7 +31,7 @@ USE m183_lb2;
 
 CREATE TABLE `permissions` (
   `ID` bigint(20) NOT NULL,
-  `userID` bigint(20) NOT NULL,
+  `userID` varchar(255) NOT NULL,
   `roleID` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
@@ -55,7 +55,7 @@ CREATE TABLE `roles` (
 CREATE TABLE `tasks` (
   `ID` bigint(20) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `userID` bigint(20) NOT NULL,
+  `userID` varchar(255) NOT NULL,
   `state` enum('open','in progress','done') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
@@ -66,9 +66,8 @@ CREATE TABLE `tasks` (
 --
 
 CREATE TABLE `users` (
-  `ID` bigint(20) NOT NULL,
-  `username` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `ID` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
@@ -118,8 +117,9 @@ ALTER TABLE `tasks`
 --
 -- AUTO_INCREMENT für Tabelle `users`
 --
-ALTER TABLE `users`
-  MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
+-- No longer needed because users ID is now a VARCHAR (Firebase uid)
+-- ALTER TABLE `users`
+--   MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
@@ -129,9 +129,9 @@ COMMIT;
 insert into roles (ID, title) values (2, 'User');
 insert into roles (ID, title) values (1, 'Admin');
 
+-- Assuming admin1 and user1 have some dummy uids, e.g. "admin1_uid", "user1_uid" for testing if desired.
+insert into users (ID, username) values ('admin1_uid', 'admin1');
+insert into users (ID, username) values ('user1_uid', 'user1');
 
-insert into users (ID, username, password) values (1, 'admin1', '$2b$10$vSwsVqUGOxXyKdYTSTYFJOKbMdbHNWBzew5pSLMpl/LT0ZDREtVEe');
-insert into users (ID, username, password) values (2, 'user1', '$2b$10$lMm1CEo3DdwahuQB.wA7quuYlPGs1/WpZyWdLjfxQAQBEgW.6ijCu');
-
-insert into permissions(ID, userID, roleID) values(null, 1, 1);
-insert into permissions(ID, userID, roleID) values(null, 2, 2);
+insert into permissions(ID, userID, roleID) values(null, 'admin1_uid', 1);
+insert into permissions(ID, userID, roleID) values(null, 'user1_uid', 2);
