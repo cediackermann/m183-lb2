@@ -10,7 +10,7 @@ async function getHtml(req) {
     `!</h2>` +
     sanitizeHtml(taskListHtml) +
     "<hr />" +
-    sanitizeHtml(bgSearch.html(req))
+    bgSearch.html(req)
   );
 }
 

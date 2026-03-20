@@ -13,6 +13,8 @@ const saveTask = require("./savetask");
 const search = require("./search");
 const searchProvider = require("./search/v2/index");
 const db = require("./fw/db");
+const csrf = require("csurf");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const app = express();
@@ -22,7 +24,10 @@ if (!process.env.SESSION_SECRET) {
   throw new Error("Missing session secret");
 }
 
-app.use(helmet());
+app.use(helmet({
+  // This would need to be adjusted for production with the right urls.
+  contentSecurityPolicy: false,
+}));
 
 // Middleware für Body-Parser
 app.use(express.urlencoded({ extended: true }));
@@ -43,6 +48,15 @@ app.use(
     }
   }),
 );
+
+const csrfProtection = csrf();
+app.use(csrfProtection);
+
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: "Too many login attempts, please try again after 15 minutes"
+});
 
 app.use((req, res, next) => {
   if (req.session && req.session.loggedin) {
@@ -111,7 +125,7 @@ app.get("/login", async (req, res) => {
 });
 
 // FIX: Add this POST route to handle the actual login submission
-app.post("/login", async (req, res) => {
+app.post("/login", loginLimiter, async (req, res) => {
   let content = await login.handleLogin(req, res);
 
   if (content.user.userid !== 0) {

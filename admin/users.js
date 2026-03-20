@@ -1,4 +1,5 @@
 const db = require("../fw/db");
+const { sanitizeHtml } = require("../fw/utils");
 
 async function getHtml() {
   let html = "";
@@ -19,9 +20,9 @@ async function getHtml() {
   result.map(function (record) {
     html += `
       <tr>
-        <td>${record.ID}</td>
-        <td>${record.username}</td>
-        <td>${record.title}</td>
+        <td>${sanitizeHtml(record.ID.toString())}</td>
+        <td>${sanitizeHtml(record.username)}</td>
+        <td>${sanitizeHtml(record.title)}</td>
       </tr>`;
   });
 

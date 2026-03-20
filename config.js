@@ -1,8 +1,8 @@
-module.exports = {
-  host: "m183-lb2-db",
-  user: "root",
-  password: "Some.Real.Secr3t",
-  database: "m183_lb2",
-};
+require("dotenv").config();
 
-//test
+module.exports = {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+};

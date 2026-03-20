@@ -25,6 +25,9 @@ async function getHtml(req) {
   html +=
     `
     <form id="form" method="post" action="savetask">
+        <input type="hidden" name="_csrf" value="` +
+    (req.csrfToken ? req.csrfToken() : "") +
+    `" />
         <input type="hidden" name="id" value="` +
     sanitizeHtml(taskId) +
     `" />

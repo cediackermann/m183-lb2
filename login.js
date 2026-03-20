@@ -22,7 +22,7 @@ async function handleLogin(req, res) {
     }
   }
 
-  return { html: msg + getHtml(), user: user };
+  return { html: msg + getHtml(req), user: user };
 }
 
 function startUserSession(req, res, user) {
@@ -79,11 +79,13 @@ async function validateLogin(username, password) {
   return result;
 }
 
-function getHtml() {
+function getHtml(req) {
+  let token = req && req.csrfToken ? req.csrfToken() : "";
   return `
     <h2>Login</h2>
 
     <form id="form" method="post" action="/login">
+        <input type="hidden" name="_csrf" value="${token}">
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control size-medium" name="username" id="username">

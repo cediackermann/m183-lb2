@@ -1,4 +1,5 @@
 const db = require("../../fw/db");
+const { sanitizeHtml } = require("../../fw/utils");
 
 async function search(req) {
   if (req.query.userid === undefined || req.query.terms === undefined) {
@@ -16,7 +17,7 @@ async function search(req) {
   );
   if (stmt.length > 0) {
     stmt.forEach(function (row) {
-      result += row.title + " (" + row.state + ")<br />";
+      result += sanitizeHtml(row.title) + " (" + sanitizeHtml(row.state) + ")<br />";
     });
   }
 

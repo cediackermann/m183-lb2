@@ -22,7 +22,6 @@ async function getHtml(req) {
     id = req.session.userid;
     const query = "select users.id userid, roles.id roleid, roles.title rolename from users inner join permissions on users.id = permissions.userid inner join roles on permissions.roleID = roles.id where userid = ?";
     let stmt = await db.executeStatement(query, [id]);
-    console.log(stmt);
 
     // load role from db
     if (stmt.length > 0) {
