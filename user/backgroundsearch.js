@@ -44,6 +44,10 @@ function getHtml(req) {
                     $("#result").html(data);
                     $("#msg").hide(500);
                     $("#result").show(500);
+                }).fail(function() {
+                    $("#result").html("Search failed.");
+                    $("#msg").hide(500);
+                    $("#result").show(500);
                 });
                 return false;
                 //form.submit();

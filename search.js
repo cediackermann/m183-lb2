@@ -14,6 +14,10 @@ async function getHtml(req) {
   let terms = req.body.terms;
   let userid = req.body.userid;
 
+  if (provider !== "/search/v2/") {
+    return "Invalid provider";
+  }
+
   await sleep(1000); // this is a long, long search!!
 
   let theUrl =

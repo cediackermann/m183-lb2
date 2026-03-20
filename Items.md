@@ -46,16 +46,24 @@
 
 4. System & Infrastructure Security
 
-   [ ] SSRF: Server-Side Request Forgery via search URL (backgroundsearch.js, search.js)
+   [x] SSRF: Server-Side Request Forgery via search URL (backgroundsearch.js, search.js)
 
-   [ ] Denial of Service: Connection pool exhaustion (db.js)
+   [x] Denial of Service: Connection pool exhaustion (db.js)
 
-   [ ] Missing Security Headers: Helmet middleware not used (index.js)
+   [x] Missing Security Headers: Helmet middleware not used (index.js)
 
-   [ ] Insecure Container Tags: Use of :latest image tags (compose.yaml, db/Dockerfile)
+   [x] Insecure Container Tags: Use of :latest image tags (compose.yaml, db/Dockerfile)
 
 5. Error Handling & Reliability
 
-   [ ] Error Mishandling: App crashes when DB connection is null (General)
+   [x] Error Mishandling: App crashes when DB connection is null (General)
 
-   [ ] Error Mishandling: Failure logic in backgroundsearch.js
+   [x] Error Mishandling: Failure logic in backgroundsearch.js
+
+6. Newly Found Vulnerabilities
+
+   [ ] Hardcoded DB Credentials: Hardcoded password and user in config.js.
+   [ ] Stored XSS: Unsanitized database outputs used in admin/users.js.
+   [ ] CSRF (Cross-Site Request Forgery): Missing CSRF tokens across all forms.
+   [ ] Stored XSS in Search: search/v2/index.js returns unsanitized row.title and row.state.
+   [ ] Bruteforce / Rate Limiting: No protection against bruteforce attacks on the /login route.

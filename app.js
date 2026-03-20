@@ -1,6 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const helmet = require("helmet");
 const path = require("path");
 const header = require("./fw/header");
 const footer = require("./fw/footer");
@@ -20,6 +21,8 @@ const PORT = 3000;
 if (!process.env.SESSION_SECRET) {
   throw new Error("Missing session secret");
 }
+
+app.use(helmet());
 
 // Middleware für Body-Parser
 app.use(express.urlencoded({ extended: true }));

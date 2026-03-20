@@ -1,7 +1,13 @@
 const mysql = require("mysql2/promise");
 const dbConfig = require("../config");
 
-// Verbindung zur Datenbank herstellen
+const pool = mysql.createPool({
+  ...dbConfig,
+  connectionLimit: 10,
+  waitForConnections: true,
+  queueLimit: 0
+});
+
 async function connectDB() {
   const MAX_RETRIES = 5;
   const RETRY_DELAY_MS = 2000;
@@ -9,8 +15,8 @@ async function connectDB() {
 
   while (retries < MAX_RETRIES) {
     try {
-      const connection = await mysql.createConnection(dbConfig);
-      console.log("Database connected");
+      const connection = await pool.getConnection();
+      console.log("Database connected from pool");
       return connection;
     } catch (error) {
       retries++;
@@ -39,10 +45,10 @@ async function executeStatement(statement, params = []) {
     return results;
   } catch (error) {
     console.error("Error executing statement:", error.message);
-    throw error;
+    return [];
   } finally {
     if (conn) {
-      await conn.end();
+      conn.release();
     }
   }
 }
