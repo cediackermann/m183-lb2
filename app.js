@@ -17,6 +17,8 @@ const deleteTask = require("./delete");
 const csrf = require("csurf");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
+const dbConfig = require("./config");
+const MySQLStore = require("express-mysql-session")(session);
 
 const app = express();
 const PORT = 3000;
@@ -36,15 +38,18 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 
+const sessionStore = new MySQLStore(dbConfig);
+
 // Middleware für Session-Handling
 app.use(
   session({
+    store: sessionStore,
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "development",
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict"
     }
   }),

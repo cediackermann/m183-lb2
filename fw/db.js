@@ -52,4 +52,4 @@ async function executeStatement(statement, params = []) {
   }
 }
 
-module.exports = { connectDB: connectDB, executeStatement: executeStatement };
+module.exports = { connectDB: connectDB, executeStatement: executeStatement, pool: pool };
