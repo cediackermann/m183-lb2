@@ -13,6 +13,7 @@ const saveTask = require("./savetask");
 const search = require("./search");
 const searchProvider = require("./search/v2/index");
 const db = require("./fw/db");
+const deleteTask = require("./delete");
 const csrf = require("csurf");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
@@ -157,6 +158,16 @@ app.get("/profile", (req, res) => {
 app.post("/savetask", async (req, res) => {
   if (activeUserSession(req)) {
     let html = await wrapContent(await saveTask.html(req), req);
+    res.send(html);
+  } else {
+    res.redirect("/");
+  }
+});
+
+// delete task
+app.get("/delete", async (req, res) => {
+  if (activeUserSession(req)) {
+    let html = await wrapContent(await deleteTask.html(req), req);
     res.send(html);
   } else {
     res.redirect("/");
