@@ -16,7 +16,6 @@ async function connectDB() {
   while (retries < MAX_RETRIES) {
     try {
       const connection = await pool.getConnection();
-      console.log("Database connected from pool");
       return connection;
     } catch (error) {
       retries++;

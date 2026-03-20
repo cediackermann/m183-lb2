@@ -41,7 +41,6 @@ function getHtml(req) {
                 $("#msg").show();
                 $("#result").html("");
                 $.post("search", { provider: provider, terms: terms, userid: userid, _csrf: $("#csrftoken").val() }, function(data){
-                    console.log(data);
                     $("#result").html(data);
                     $("#msg").hide(500);
                     $("#result").show(500);
