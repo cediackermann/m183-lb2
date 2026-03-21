@@ -37,6 +37,7 @@ async function getHtml(req) {
                 <li><a href="/admin/users">User List</a></li>`;
     }
     content += `
+                <li><a href="/settings">Settings</a></li>
                 <li><a href="/logout">Logout</a></li>
             </ul>
         </nav>`;
