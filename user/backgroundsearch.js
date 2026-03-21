@@ -7,7 +7,7 @@ function getHtml(req) {
     <h2>Search</h2>
     <form id="form" method="post" action="">
         <input type="hidden" id="searchurl" name="searchurl" value="/search/v2/" />
-        <input type="hidden" id="csrftoken" value="` + (req.csrfToken ? req.csrfToken() : "") + `" />
+        <input type="hidden" id="csrftoken" name="_csrf" value="` + (req.csrfToken ? req.csrfToken() : "") + `" />
         <div class="form-group">
             <label for="terms">terms</label>
             <input type="text" class="form-control size-medium" name="terms" id="terms">
@@ -35,9 +35,9 @@ function getHtml(req) {
             submitHandler: function (form) {
                 provider = $("#searchurl").val();
                 terms = $("#terms").val();
-                userid = ` +
+                userid = "` +
         sanitizeHtml(req.session.userid) +
-        `;
+        `";
                 $("#msg").show();
                 $("#result").html("");
                 $.post("search", { provider: provider, terms: terms, userid: userid, _csrf: $("#csrftoken").val() }, function(data){
