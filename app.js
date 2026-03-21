@@ -13,6 +13,7 @@ const saveTask = require("./savetask");
 const search = require("./search");
 const searchProvider = require("./search/v2/index");
 const db = require("./fw/db");
+const settings = require("./settings");
 const deleteTask = require("./delete");
 const csrf = require("csurf");
 const rateLimit = require("express-rate-limit");
@@ -22,6 +23,13 @@ const MySQLStore = require("express-mysql-session")(session);
 
 const app = express();
 const PORT = 3000;
+
+const admin = require("firebase-admin");
+try {
+  admin.initializeApp({
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  });
+} catch (e) { }
 
 if (!process.env.SESSION_SECRET) {
   throw new Error("Missing session secret");
@@ -49,7 +57,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false, // disabled for local HTTP testing
       sameSite: "strict"
     }
   }),
@@ -64,7 +72,25 @@ const loginLimiter = rateLimit({
   message: "Too many login attempts, please try again after 15 minutes"
 });
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
+  const token = req.cookies.token;
+  if (token) {
+    try {
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      req.session.loggedin = true;
+      req.session.userid = decodedToken.uid;
+      req.session.username = decodedToken.email;
+    } catch (err) {
+      req.session.loggedin = false;
+      delete req.session.userid;
+      delete req.session.username;
+    }
+  } else {
+    req.session.loggedin = false;
+    delete req.session.userid;
+    delete req.session.username;
+  }
+
   if (req.session && req.session.loggedin) {
     req.cookies.userid = req.session.userid;
     req.cookies.username = req.session.username;
@@ -133,21 +159,67 @@ app.get("/login", async (req, res) => {
 // FIX: Add this POST route to handle the actual login submission
 app.post("/login", loginLimiter, async (req, res) => {
   let content = await login.handleLogin(req, res);
+  // Just show the UI since authentication happens on client.
+  let html = await wrapContent(content.html, req);
+  res.send(html);
+});
 
-  if (content.user.userid !== 0) {
-    login.startUserSession(req, res, content.user);
-  } else {
-    // login unsuccessful or not made jet... display login form
-    let html = await wrapContent(content.html, req);
-    res.send(html);
+// Sync Firebase User with Local DB
+app.post("/auth-sync", async (req, res) => {
+  if (!req.session.loggedin || !req.session.userid) {
+    return res.status(401).send("Unauthorized");
+  }
+  const uid = req.session.userid;
+  let email = req.body.email || "user@example.com";
+  // Create user in DB if they don't exist
+  try {
+    const existing = await db.executeStatement("SELECT id FROM users WHERE id=?", [uid]);
+    if (existing.length === 0) {
+      await db.executeStatement("INSERT INTO users (id, username) VALUES (?, ?)", [uid, email]);
+
+      // Default to Role 2 (User)
+      await db.executeStatement("INSERT INTO permissions (userID, roleID) VALUES (?, 2)", [uid]);
+    }
+    res.status(200).send("Synced");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error syncing user");
   }
 });
 
 // Logout
 app.get("/logout", (req, res) => {
-  req.session.destroy();
+  if (req.session) req.session.destroy();
   res.clearCookie("connect.sid");
-  res.redirect("/login");
+  res.clearCookie("token");
+  res.send(`
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
+    <script type="text/javascript">
+      const firebaseConfig = {
+        apiKey: "${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}",
+        authDomain: "${process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}",
+        projectId: "${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}"
+      };
+      const app = firebase.initializeApp(firebaseConfig);
+      firebase.auth().signOut().then(() => {
+        window.location.href = "/login";
+      }).catch(() => {
+        window.location.href = "/login";
+      });
+    </script>
+    Logging out...
+  `);
+});
+
+// Settings page
+app.get("/settings", async (req, res) => {
+  if (activeUserSession(req)) {
+    let html = await wrapContent(await settings.html(req), req);
+    res.send(html);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 // Profilseite anzeigen
