@@ -1,4 +1,4 @@
-function getHtml() {
+export default function footer() {
   return `</main>
 <footer>
     &copy;TBZ
@@ -7,5 +7,3 @@ function getHtml() {
 </body>
 </html>`;
 }
-
-module.exports = getHtml();

@@ -1,21 +1,28 @@
-const express = require('express');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const helmet = require('helmet');
-const path = require('path');
-const csrf = require('csurf');
-require('dotenv').config();
+import express, { urlencoded, json } from 'express';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import csrf from 'csurf';
+import { config } from 'dotenv';
+config();
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-const dbConfig = require('./src/config/db.config');
-const MySQLStore = require('express-mysql-session')(session);
-const { authSync } = require('./src/middleware/authMiddleware');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-const indexRoutes = require('./src/routes/indexRoutes');
-const authRoutes = require('./src/routes/authRoutes');
-const taskRoutes = require('./src/routes/taskRoutes');
-const adminRoutes = require('./src/routes/adminRoutes');
-const searchRoutes = require('./src/routes/searchRoutes');
-const userRoutes = require('./src/routes/userRoutes');
+import dbConfig from './src/config/db.config.js';
+import MySQLStoreFactory from 'express-mysql-session';
+const MySQLStore = MySQLStoreFactory(session);
+
+import { authSync } from './src/middleware/authMiddleware.js';
+
+import indexRoutes from './src/routes/indexRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
+import taskRoutes from './src/routes/taskRoutes.js';
+import adminRoutes from './src/routes/adminRoutes.js';
+import searchRoutes from './src/routes/searchRoutes.js';
+import userRoutes from './src/routes/userRoutes.js';
 
 const app = express();
 const PORT = 3000;
@@ -28,8 +35,8 @@ app.use(helmet({
   contentSecurityPolicy: false,
 }));
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(urlencoded({ extended: true }));
+app.use(json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 

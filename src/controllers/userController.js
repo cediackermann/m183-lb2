@@ -1,6 +1,6 @@
-async function getHtml(req) {
-    let token = req && req.csrfToken ? req.csrfToken() : "";
-    return `
+export async function user(req) {
+  let token = req && req.csrfToken ? req.csrfToken() : "";
+  return `
     <h2>Settings</h2>
     <div id="mfa-status" style="margin-bottom: 20px;">Checking MFA Status...</div>
     <div id="mfa-enroll-btn" style="display:none; margin-top: 15px;">
@@ -28,5 +28,3 @@ async function getHtml(req) {
     <script type="module" src="/js/settings.js"></script>
   `;
 }
-
-module.exports = { html: getHtml };

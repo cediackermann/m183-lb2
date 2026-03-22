@@ -1,7 +1,6 @@
-const login = require("../../controllers/authController");
-const db = require("../../config/db");
+import { executeStatement } from "../../config/db.js";
 
-async function getHtml(req) {
+export default async function header(req) {
   let content = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,14 +13,14 @@ async function getHtml(req) {
 </head>
 <body>
     <header>
-        <div>This is the insecure m183 test app</div>`;
+        <div>This is the <del>in</del>secure m183 test app</div>`;
 
   let id = 0;
   let roleid = 0;
   if (req.session && req.session.userid) {
     id = req.session.userid;
     const query = "select users.id as userid, roles.id as roleid, roles.title as rolename from users inner join permissions on users.id = permissions.userID inner join roles on permissions.roleID = roles.id where users.id = ?";
-    let stmt = await db.executeStatement(query, [id]);
+    let stmt = await executeStatement(query, [id]);
 
     // load role from db
     if (stmt.length > 0) {
@@ -49,5 +48,3 @@ async function getHtml(req) {
 
   return content;
 }
-
-module.exports = getHtml;

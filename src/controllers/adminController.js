@@ -1,9 +1,9 @@
-const db = require("../config/db");
-const { sanitizeHtml } = require("../views/utils");
+import { executeStatement } from "../config/db.js";
+import { sanitizeHtml } from "../views/utils.js";
 
-async function getHtml() {
+export async function userList() {
   let html = "";
-  let result = await db.executeStatement(
+  let result = await executeStatement(
     "SELECT users.ID, users.username, roles.title FROM users INNER JOIN permissions ON users.ID = permissions.userID INNER JOIN roles ON permissions.roleID = roles.ID ORDER BY username"
   );
 
@@ -31,5 +31,3 @@ async function getHtml() {
 
   return html;
 }
-
-module.exports = { html: getHtml() };

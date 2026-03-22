@@ -1,7 +1,8 @@
-const axios = require("axios");
-const querystring = require("querystring");
+import axios from "axios";
+const { post, put, get } = axios;
+import { stringify } from "querystring";
 
-async function getHtml(req) {
+export async function search(req) {
   if (
     req.body.provider === undefined ||
     req.body.terms === undefined ||
@@ -19,7 +20,7 @@ async function getHtml(req) {
     return "Invalid provider";
   }
 
-  await sleep(1000); // this is a long, long search!!
+  await sleep(10);
 
   let queryParams = new URLSearchParams({
     terms: terms
@@ -41,8 +42,7 @@ async function callAPI(method, url, data, req) {
   switch (method) {
     case "POST":
       if (data) {
-        result = await axios
-          .post(url, data, config)
+        result = await post(url, data, config)
           .then((response) => {
             return response.data;
           })
@@ -50,8 +50,7 @@ async function callAPI(method, url, data, req) {
             return noResults;
           });
       } else {
-        result = await axios
-          .post(url, null, config)
+        result = await post(url, null, config)
           .then((response) => {
             return response.data;
           })
@@ -62,8 +61,7 @@ async function callAPI(method, url, data, req) {
       break;
     case "PUT":
       if (data) {
-        result = await axios
-          .put(url, data, config)
+        result = await put(url, data, config)
           .then((response) => {
             return response.data;
           })
@@ -71,8 +69,7 @@ async function callAPI(method, url, data, req) {
             return noResults;
           });
       } else {
-        result = await axios
-          .put(url, null, config)
+        result = await put(url, null, config)
           .then((response) => {
             return response.data;
           })
@@ -82,10 +79,9 @@ async function callAPI(method, url, data, req) {
       }
       break;
     default:
-      if (data) url = url + "?" + querystring.stringify(data);
+      if (data) url = url + "?" + stringify(data);
 
-      result = await axios
-        .get(url, config)
+      result = await get(url, config)
         .then((response) => {
           return response.data;
         })
@@ -102,5 +98,3 @@ function sleep(ms) {
     setTimeout(resolve, ms);
   });
 }
-
-module.exports = { html: getHtml };

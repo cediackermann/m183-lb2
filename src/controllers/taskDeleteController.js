@@ -1,14 +1,13 @@
-const db = require("../config/db");
-const { sanitizeHtml } = require("../views/utils");
+import { executeStatement } from "../config/db.js";
 
-async function getHtml(req) {
+export async function taskDelete(req) {
   let html = "";
   let taskId = req.body.id;
   let userid = req.session.userid;
 
   if (taskId !== undefined && taskId.length !== 0) {
     // Delete the task if the logged-in user owns it
-    let result = await db.executeStatement(
+    let result = await executeStatement(
       "DELETE FROM tasks WHERE ID = ? AND UserID = ?",
       [taskId, userid]
     );
@@ -28,5 +27,3 @@ async function getHtml(req) {
 
   return html;
 }
-
-module.exports = { html: getHtml };

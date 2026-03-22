@@ -1,10 +1,8 @@
-const db = require("../config/db");
-
-async function handleLogin(req, res) {
+export async function handleLogin(req, res) {
   return { html: getHtml(req), user: { username: "", userid: 0 } };
 }
 
-function startUserSession(req, res, user) {
+export function startUserSession(req, res, user) {
   res.redirect("/");
 }
 
@@ -72,8 +70,3 @@ function getHtml(req) {
     <script type="module" src="/js/login.js"></script>
   `;
 }
-
-module.exports = {
-  handleLogin: handleLogin,
-  startUserSession: startUserSession,
-};

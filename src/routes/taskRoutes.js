@@ -1,14 +1,14 @@
-const express = require('express');
-const router = express.Router();
-const taskEditController = require('../controllers/taskEditController');
-const taskSaveController = require('../controllers/taskSaveController');
-const taskDeleteController = require('../controllers/taskDeleteController');
-const { activeUserSession } = require('../middleware/authMiddleware');
-const { wrapContent } = require('../views/utils');
+import { Router } from 'express';
+const router = Router();
+import { taskEdit } from '../controllers/taskEditController.js';
+import { taskSave } from '../controllers/taskSaveController.js';
+import { taskDelete } from '../controllers/taskDeleteController.js';
+import { activeUserSession } from '../middleware/authMiddleware.js';
+import { wrapContent } from '../views/utils.js';
 
 router.get('/edit', async (req, res) => {
   if (activeUserSession(req)) {
-    let html = await wrapContent(await taskEditController.html(req), req);
+    let html = await wrapContent(await taskEdit(req), req);
     res.send(html);
   } else {
     res.redirect('/');
@@ -17,7 +17,7 @@ router.get('/edit', async (req, res) => {
 
 router.post('/savetask', async (req, res) => {
   if (activeUserSession(req)) {
-    let html = await wrapContent(await taskSaveController.html(req), req);
+    let html = await wrapContent(await taskSave(req), req);
     res.send(html);
   } else {
     res.redirect('/');
@@ -26,11 +26,11 @@ router.post('/savetask', async (req, res) => {
 
 router.post('/delete', async (req, res) => {
   if (activeUserSession(req)) {
-    let html = await wrapContent(await taskDeleteController.html(req), req);
+    let html = await wrapContent(await taskDelete(req), req);
     res.send(html);
   } else {
     res.redirect('/');
   }
 });
 
-module.exports = router;
+export default router;

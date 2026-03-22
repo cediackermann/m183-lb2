@@ -1,14 +1,14 @@
-const mysql = require("mysql2/promise");
-const dbConfig = require("./db.config");
+import { createPool } from "mysql2/promise";
+import dbConfig from "./db.config.js";
 
-const pool = mysql.createPool({
+export const pool = createPool({
   ...dbConfig,
   connectionLimit: 10,
   waitForConnections: true,
   queueLimit: 0
 });
 
-async function connectDB() {
+export async function connectDB() {
   const MAX_RETRIES = 5;
   const RETRY_DELAY_MS = 2000;
   let retries = 0;
@@ -36,7 +36,7 @@ async function connectDB() {
   }
 }
 
-async function executeStatement(statement, params = []) {
+export async function executeStatement(statement, params = []) {
   let conn;
   try {
     conn = await connectDB();
@@ -51,5 +51,3 @@ async function executeStatement(statement, params = []) {
     }
   }
 }
-
-module.exports = { connectDB: connectDB, executeStatement: executeStatement, pool: pool };

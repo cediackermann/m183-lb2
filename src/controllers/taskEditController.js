@@ -1,60 +1,60 @@
-const db = require("../config/db");
-const { sanitizeHtml } = require("../views/utils");
+import { executeStatement } from "../config/db.js";
+import { sanitizeHtml } from "../views/utils.js";
 
-async function getHtml(req) {
-  let title = "";
-  let state = "";
-  let taskId = "";
-  let html = "";
-  let options = ["Open", "In Progress", "Done"];
+export async function taskEdit(req) {
+    let title = "";
+    let state = "";
+    let taskId = "";
+    let html = "";
+    let options = ["Open", "In Progress", "Done"];
 
-  if (req.query.id !== undefined) {
-    taskId = req.query.id;
-    const query = "select ID, title, state from tasks where ID = ? AND UserID = ?"
-    let result = await db.executeStatement(query, [taskId, req.session.userid]);
-    if (result.length > 0) {
-      title = result[0].title;
-      state = result[0].state;
+    if (req.query.id !== undefined) {
+        taskId = req.query.id;
+        const query = "select ID, title, state from tasks where ID = ? AND UserID = ?"
+        let result = await executeStatement(query, [taskId, req.session.userid]);
+        if (result.length > 0) {
+            title = result[0].title;
+            state = result[0].state;
+        }
+
+        html += `<h1>Edit Task</h1>`;
+    } else {
+        html += `<h1>Create Task</h1>`;
     }
 
-    html += `<h1>Edit Task</h1>`;
-  } else {
-    html += `<h1>Create Task</h1>`;
-  }
-
-  html +=
-    `
+    html +=
+        `
     <form id="form" method="post" action="savetask">
         <input type="hidden" name="_csrf" value="` +
-    (req.csrfToken ? req.csrfToken() : "") +
-    `" />
+        (req.csrfToken ? req.csrfToken() : "") +
+        `" />
         <input type="hidden" name="id" value="` +
-    sanitizeHtml(taskId) +
-    `" />
+        sanitizeHtml(taskId) +
+        `" />
         <div class="form-group">
             <label for="title">Description</label>
             <input type="text" class="form-control size-medium" name="title" id="title" value="` +
-    sanitizeHtml(title) +
-    `">
+        sanitizeHtml(title) +
+        `">
         </div>
         <div class="form-group">
             <label for="state">State</label>
             <select name="state" id="state" class="size-auto">`;
 
-  for (let i = 0; i < options.length; i++) {
-    let selected = state === options[i].toLowerCase() ? "selected" : "";
-    html += `<span>` + options[1] + `</span>`;
-    html +=
-      `<option value='` +
-      sanitizeHtml(options[i].toLowerCase()) +
-      `' ` +
-      selected +
-      `>` +
-      sanitizeHtml(options[i]) +
-      `</option>`;
-  }
+    for (let i = 0; i < options.length; i++) {
+        let selected = state === options[i].toLowerCase() ? "selected" : "";
+        html += `<span>` + options[1] + `</span>`;
+        html +=
+            `<option value='` +
+            sanitizeHtml(options[i].toLowerCase()) +
+            `' ` +
+            selected +
+            `>` +
+            sanitizeHtml(options[i]) +
+            `</option>`;
+    }
 
-  html += `
+    html += `
             </select>
         </div>
         <div class="form-group">
@@ -80,7 +80,5 @@ async function getHtml(req) {
     });
     </script>`;
 
-  return html;
+    return html;
 }
-
-module.exports = { html: getHtml };

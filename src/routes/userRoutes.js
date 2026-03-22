@@ -1,12 +1,12 @@
-const express = require('express');
-const router = express.Router();
-const userController = require('../controllers/userController');
-const { activeUserSession } = require('../middleware/authMiddleware');
-const { wrapContent } = require('../views/utils');
+import { Router } from 'express';
+const router = Router();
+import { user } from '../controllers/userController.js';
+import { activeUserSession } from '../middleware/authMiddleware.js';
+import { wrapContent } from '../views/utils.js';
 
 router.get('/settings', async (req, res) => {
   if (activeUserSession(req)) {
-    let html = await wrapContent(await userController.html(req), req);
+    let html = await wrapContent(await user(req), req);
     res.send(html);
   } else {
     res.redirect('/login');
@@ -21,4 +21,4 @@ router.get('/profile', (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

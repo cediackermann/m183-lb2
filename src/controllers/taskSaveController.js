@@ -1,16 +1,15 @@
-const db = require("../config/db");
+import { executeStatement } from "../config/db.js";
 
-async function getHtml(req) {
+export async function taskSave(req) {
   let html = "";
   let taskId = "";
   let userid = req.session.userid;
 
   if (req.body.id !== undefined && req.body.id.trim() !== "") {
     taskId = req.body.id;
-    // We add the userID check here to prevent IDOR
-    let stmt = await db.executeStatement(
-        "SELECT ID FROM tasks WHERE ID = ? AND userID = ?",
-        [taskId, userid]
+    let stmt = await executeStatement(
+      "SELECT ID FROM tasks WHERE ID = ? AND userID = ?",
+      [taskId, userid]
     );
 
     if (stmt.length === 0) {
@@ -32,15 +31,15 @@ async function getHtml(req) {
     }
 
     if (taskId === "") {
-      await db.executeStatement(
-          "INSERT INTO tasks (title, state, userID) VALUES (?, ?, ?)",
-          [title, state, userid]
+      await executeStatement(
+        "INSERT INTO tasks (title, state, userID) VALUES (?, ?, ?)",
+        [title, state, userid]
       );
       html += "<span class='info info-success'>Task successfully created. <a href='/'>Go back</a></span>";
     } else {
-      await db.executeStatement(
-          "UPDATE tasks SET title = ?, state = ? WHERE ID = ? AND userID = ?",
-          [title, state, taskId, userid]
+      await executeStatement(
+        "UPDATE tasks SET title = ?, state = ? WHERE ID = ? AND userID = ?",
+        [title, state, taskId, userid]
       );
       html += "<span class='info info-success'>Task successfully updated. <a href='/'>Go back</a></span>";
     }
@@ -50,5 +49,3 @@ async function getHtml(req) {
 
   return html;
 }
-
-module.exports = { html: getHtml };

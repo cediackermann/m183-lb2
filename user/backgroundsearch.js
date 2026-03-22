@@ -1,6 +1,6 @@
-const { sanitizeHtml } = require("../src/views/utils");
+import { sanitizeHtml } from "../src/views/utils.js";
 
-function getHtml(req) {
+export function backgroundSearch(req) {
     return (
         `
 <section id="search">
@@ -58,7 +58,3 @@ function getHtml(req) {
 </section>`
     );
 }
-
-module.exports = {
-    html: getHtml,
-};

@@ -1,20 +1,21 @@
-const admin = require("firebase-admin");
-const db = require('../config/db');
+import { initializeApp, getApps } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { executeStatement } from '../config/db.js';
 
-function activeUserSession(req) {
+export function activeUserSession(req) {
   return req.session && req.session.loggedin === true;
 }
 
-async function authSync(req, res, next) {
+export async function authSync(req, res, next) {
   const token = req.cookies.token;
   if (token) {
     try {
-      if (!admin.apps.length) {
-        admin.initializeApp({
+      if (getApps().length === 0) {
+        initializeApp({
           projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID
         });
       }
-      const decodedToken = await admin.auth().verifyIdToken(token);
+      const decodedToken = await getAuth().verifyIdToken(token);
       req.session.loggedin = true;
       req.session.userid = decodedToken.uid;
       req.session.username = decodedToken.email;
@@ -39,16 +40,16 @@ async function authSync(req, res, next) {
   next();
 }
 
-async function isAdmin(req) {
+export async function isAdmin(req) {
   if (!activeUserSession(req)) return false;
 
   const query = "SELECT roleID FROM permissions WHERE userID =?";
-  const result = await db.executeStatement(query, [req.session.userid]);
+  const result = await executeStatement(query, [req.session.userid]);
 
   return result.length > 0 && result[0].roleID === 1;
 }
 
-module.exports = {
+export default {
   activeUserSession,
   authSync,
   isAdmin

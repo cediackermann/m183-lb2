@@ -1,19 +1,19 @@
-const escape = require('escape-html');
-const header = require('./partials/header');
-const footer = require('./partials/footer');
+import escape from 'escape-html';
+import header from './partials/header.js';
+import footer from './partials/footer.js';
 
-function sanitizeHtml(unsafe) {
+export function sanitizeHtml(unsafe) {
   if (typeof unsafe !== 'string') {
     unsafe = String(unsafe !== null && unsafe !== undefined ? unsafe : "");
   }
 
-  // This handles the "Big 5" dangerous characters perfectly
   return escape(unsafe);
 }
 
-async function wrapContent(content, req) {
+export async function wrapContent(content, req) {
   let headerHtml = await header(req);
-  return headerHtml + content + footer;
+  let footerHtml = footer();
+  return headerHtml + content + footerHtml;
 }
 
-module.exports = { sanitizeHtml, wrapContent };
+export default { sanitizeHtml, wrapContent };

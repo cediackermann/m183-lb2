@@ -1,7 +1,7 @@
-const db = require("../src/config/db");
-const { sanitizeHtml } = require("../src/views/utils");
+import { executeStatement } from "../src/config/db.js";
+import { sanitizeHtml } from "../src/views/utils.js";
 
-async function getHtml(req) {
+export async function taskList(req) {
   let html = `
     <section id="list">
         <a href="edit">Create Task</a>
@@ -15,7 +15,7 @@ async function getHtml(req) {
     `;
 
   const query = "select ID, title, state from tasks where UserID = ?"
-  let result = await db.executeStatement(query, [req.session.userid]);
+  let result = await executeStatement(query, [req.session.userid]);
   result.forEach(function (row) {
     const csrfToken = req.csrfToken ? req.csrfToken() : "";
     html += `
@@ -45,5 +45,3 @@ async function getHtml(req) {
 function ucfirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
-module.exports = { html: getHtml };

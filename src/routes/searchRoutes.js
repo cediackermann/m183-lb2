@@ -1,12 +1,12 @@
-const express = require('express');
-const router = express.Router();
-const searchController = require('../controllers/searchController');
-const searchV2Controller = require('../controllers/searchV2Controller');
-const { activeUserSession } = require('../middleware/authMiddleware');
+import { Router } from 'express';
+const router = Router();
+import { search } from '../controllers/searchController.js';
+import { searchV2 } from '../controllers/searchV2Controller.js';
+import { activeUserSession } from '../middleware/authMiddleware.js';
 
 router.post('/', async (req, res) => {
   if (activeUserSession(req)) {
-    let html = await searchController.html(req);
+    let html = await search(req);
     res.send(html);
   } else {
     res.status(401).send('Unauthorized');
@@ -15,11 +15,11 @@ router.post('/', async (req, res) => {
 
 router.get('/v2/', async (req, res) => {
   if (activeUserSession(req)) {
-    let result = await searchV2Controller.search(req);
+    let result = await searchV2(req);
     res.send(result);
   } else {
     res.status(401).send('Unauthorized');
   }
 });
 
-module.exports = router;
+export default router;

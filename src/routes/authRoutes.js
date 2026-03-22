@@ -1,10 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('../controllers/authController');
-const { activeUserSession } = require('../middleware/authMiddleware');
-const { wrapContent } = require('../views/utils');
-const rateLimit = require('express-rate-limit');
-const db = require('../config/db');
+import { Router } from 'express';
+const router = Router();
+import { handleLogin } from '../controllers/authController.js';
+import { wrapContent } from '../views/utils.js';
+import rateLimit from 'express-rate-limit';
+import { executeStatement } from '../config/db.js';
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -13,13 +12,13 @@ const loginLimiter = rateLimit({
 });
 
 router.get('/login', async (req, res) => {
-  let content = await authController.handleLogin(req, res);
+  let content = await handleLogin(req, res);
   let html = await wrapContent(content.html, req);
   res.send(html);
 });
 
 router.post('/login', loginLimiter, async (req, res) => {
-  let content = await authController.handleLogin(req, res);
+  let content = await handleLogin(req, res);
   let html = await wrapContent(content.html, req);
   res.send(html);
 });
@@ -31,10 +30,10 @@ router.post('/auth-sync', async (req, res) => {
   const uid = req.session.userid;
   let email = req.body.email || 'user@example.com';
   try {
-    const existing = await db.executeStatement('SELECT id FROM users WHERE id=?', [uid]);
+    const existing = await executeStatement('SELECT id FROM users WHERE id=?', [uid]);
     if (existing.length === 0) {
-      await db.executeStatement('INSERT INTO users (id, username) VALUES (?, ?)', [uid, email]);
-      await db.executeStatement('INSERT INTO permissions (userID, roleID) VALUES (?, 2)', [uid]);
+      await executeStatement('INSERT INTO users (id, username) VALUES (?, ?)', [uid, email]);
+      await executeStatement('INSERT INTO permissions (userID, roleID) VALUES (?, 2)', [uid]);
     }
     res.status(200).send('Synced');
   } catch (err) {
@@ -67,4 +66,4 @@ router.get('/logout', (req, res) => {
   `);
 });
 
-module.exports = router;
+export default router;

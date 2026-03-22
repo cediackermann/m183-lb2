@@ -1,7 +1,7 @@
-const db = require("../config/db");
-const { sanitizeHtml } = require("../views/utils");
+import { executeStatement } from "../config/db.js";
+import { sanitizeHtml } from "../views/utils.js";
 
-async function search(req) {
+export async function searchV2(req) {
   if (!req.session || !req.session.userid || req.query.terms === undefined) {
     return "Not enough information to search";
   }
@@ -11,7 +11,7 @@ async function search(req) {
   let result = "";
 
   const query = "select ID, title, state from tasks where userID = ? and title like ?"
-  let stmt = await db.executeStatement(
+  let stmt = await executeStatement(
     query,
     [userid, "%" + terms + "%"],
   );
@@ -23,7 +23,3 @@ async function search(req) {
 
   return result;
 }
-
-module.exports = {
-  search: search,
-};
