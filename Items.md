@@ -72,6 +72,10 @@
 
    [x] Insecure Container Tags: Use of :latest image tags (compose.yaml, db/Dockerfile)
 
+   [x] Disabled CSP: Content Security Policy enabled in Helmet config (server.js)
+
+   [x] Vulnerable Library: Upgraded jQuery to secure version 3.7.1 (header.js)
+
 5. Error Handling & Reliability
 
    [x] Error Mishandling: App crashes when DB connection is null (General)
