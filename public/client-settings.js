@@ -54,7 +54,7 @@ window.disableMfa = function () {
 window.enrollMfa = async function () {
     const errorMsg = document.getElementById('error-msg');
     if (!currentUser) return;
-    
+
     try {
         await currentUser.reload();
     } catch (e) {

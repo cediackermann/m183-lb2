@@ -61,17 +61,43 @@ function onAuthSuccess(user) {
       document.getElementById('confirm-group').style.display = 'none';
       document.getElementById('submit-btn').style.display = 'none';
       if (mode === 'login') {
-          document.getElementById('error-msg').style.color = 'green';
-          document.getElementById('error-msg').innerText = 'Logged in successfully! Redirecting...';
-          window.location.assign('/');
+        document.getElementById('error-msg').style.color = 'green';
+        document.getElementById('error-msg').innerText = 'Logged in successfully! Redirecting...';
+        window.location.assign('/');
       } else {
-          document.getElementById('error-msg').style.color = 'green';
-          document.getElementById('error-msg').innerText = 'Account created! You can now configure MFA or continue.';
-          document.getElementById('mfa-enroll-btn').style.display = 'block';
-          document.getElementById('continue-btn').style.display = 'block';
+        document.getElementById('error-msg').style.color = 'green';
+        document.getElementById('error-msg').innerText = 'Account created! You can now configure MFA or continue.';
+        document.getElementById('mfa-enroll-btn').style.display = 'block';
+        document.getElementById('continue-btn').style.display = 'block';
       }
     });
   });
+}
+
+function getFriendlyErrorMessage(error) {
+  switch (error.code) {
+    case 'auth/invalid-email':
+      return 'Invalid email address.';
+    case 'auth/user-disabled':
+      return 'This account has been disabled.';
+    case 'auth/user-not-found':
+      return 'No account found with this email.';
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'Invalid email or password.';
+    case 'auth/email-already-in-use':
+      return 'An account already exists with this email address.';
+    case 'auth/weak-password':
+      return 'Password should be at least 6 characters.';
+    case 'auth/too-many-requests':
+      return 'Too many unsuccessful attempts. Please try again later.';
+    case 'auth/network-request-failed':
+      return 'Network error. Please check your connection.';
+    case 'auth/quota-exceeded':
+      return 'Too many requests. Please try again later.';
+    default:
+      return error.message ? error.message.replace(/^Firebase:\s*/, '') : 'An unknown error occurred.';
+  }
 }
 
 window.handleAuth = function (e) {
@@ -92,7 +118,7 @@ window.handleAuth = function (e) {
         onAuthSuccess(userCredential.user);
       })
       .catch((error) => {
-        errorMsg.innerText = 'Incorrect TOTP Code: ' + error.message;
+        errorMsg.innerText = 'Incorrect TOTP Code: ' + getFriendlyErrorMessage(error);
       });
     return;
   }
@@ -108,11 +134,11 @@ window.handleAuth = function (e) {
         sendEmailVerification(userCredential.user).then(() => {
           onAuthSuccess(userCredential.user);
         }).catch((err) => {
-          errorMsg.innerText = "Error sending verification email: " + err.message;
+          errorMsg.innerText = "Error sending verification email: " + getFriendlyErrorMessage(err);
         });
       })
       .catch((error) => {
-        errorMsg.innerText = error.message;
+        errorMsg.innerText = getFriendlyErrorMessage(error);
       });
   } else {
     signInWithEmailAndPassword(auth, email, password)
@@ -130,7 +156,7 @@ window.handleAuth = function (e) {
           document.getElementById('submit-btn').value = 'Verify TOTP Code';
           errorMsg.innerText = 'Multi-Factor Authentication required.';
         } else {
-          errorMsg.innerText = error.message;
+          errorMsg.innerText = getFriendlyErrorMessage(error);
         }
       });
   }
@@ -164,7 +190,7 @@ window.enrollMfa = async function () {
     errorMsg.innerText = 'Use your Authenticator App to scan the code below.';
   }).catch((e) => {
     errorMsg.style.color = 'red';
-    errorMsg.innerText = e.message;
+    errorMsg.innerText = getFriendlyErrorMessage(e);
   });
 };
 
@@ -173,21 +199,21 @@ window.finalizeMfa = function () {
   const errorMsg = document.getElementById('error-msg');
   const assertion = TotpMultiFactorGenerator.assertionForEnrollment(window.currentTotpSecret, code);
   multiFactor(currentUser).enroll(assertion, 'TOTP Authenticator')
-      .then(() => {
-        document.getElementById('qr-code-container').innerHTML = '';
-        errorMsg.style.color = 'green';
-        errorMsg.innerText = 'MFA successfully enrolled! Redirecting...';
-        document.getElementById('mfa-enroll-btn').style.display = 'none';
-        setTimeout(() => window.location.assign('/'), 2000);
-      })
-      .catch((error) => {
-        errorMsg.style.color = 'red';
-        if (error.code === 'auth/requires-recent-login') {
-          errorMsg.innerText = "Security Timeout: Please log out and log back in to finish setting up MFA.";
-        } else {
-          errorMsg.innerText = "Error: " + error.message;
-        }
-      });
+    .then(() => {
+      document.getElementById('qr-code-container').innerHTML = '';
+      errorMsg.style.color = 'green';
+      errorMsg.innerText = 'MFA successfully enrolled! Redirecting...';
+      document.getElementById('mfa-enroll-btn').style.display = 'none';
+      setTimeout(() => window.location.assign('/'), 2000);
+    })
+    .catch((error) => {
+      errorMsg.style.color = 'red';
+      if (error.code === 'auth/requires-recent-login') {
+        errorMsg.innerText = "Security Timeout: Please log out and log back in to finish setting up MFA.";
+      } else {
+        errorMsg.innerText = "Error: " + getFriendlyErrorMessage(error);
+      }
+    });
 };
 
 onAuthStateChanged(auth, (user) => {
