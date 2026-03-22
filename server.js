@@ -23,6 +23,7 @@ import taskRoutes from './src/routes/taskRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
 import searchRoutes from './src/routes/searchRoutes.js';
 import userRoutes from './src/routes/userRoutes.js';
+import testRoutes from './src/routes/testRoutes.js';
 
 const app = express();
 const PORT = 3000;
@@ -67,6 +68,7 @@ app.use('/', taskRoutes);
 app.use('/admin', adminRoutes);
 app.use('/search', searchRoutes);
 app.use('/', userRoutes);
+app.use('/test', testRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
