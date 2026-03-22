@@ -3,10 +3,10 @@ const querystring = require("querystring");
 
 async function getHtml(req) {
   if (
-      req.body.provider === undefined ||
-      req.body.terms === undefined ||
-      !req.session ||
-      !req.session.userid
+    req.body.provider === undefined ||
+    req.body.terms === undefined ||
+    !req.session ||
+    !req.session.userid
   ) {
     return "Not enough information provided";
   }
