@@ -1,5 +1,5 @@
-const db = require("./fw/db");
-const { sanitizeHtml } = require("./fw/utils");
+const db = require("../config/db");
+const { sanitizeHtml } = require("../views/utils");
 
 async function getHtml(req) {
   let html = "";

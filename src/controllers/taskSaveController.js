@@ -1,4 +1,4 @@
-const db = require("./fw/db");
+const db = require("../config/db");
 
 async function getHtml(req) {
   let html = "";

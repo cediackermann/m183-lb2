@@ -1,4 +1,4 @@
-const db = require("./fw/db");
+const db = require("../config/db");
 
 async function handleLogin(req, res) {
   return { html: getHtml(req), user: { username: "", userid: 0 } };
@@ -69,7 +69,7 @@ function getHtml(req) {
       };
       window.CSRF_TOKEN = "${token}";
     </script>
-    <script type="module" src="/client-login.js"></script>
+    <script type="module" src="/js/login.js"></script>
   `;
 }
 

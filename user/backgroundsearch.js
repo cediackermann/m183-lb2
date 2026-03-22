@@ -1,4 +1,4 @@
-const { sanitizeHtml } = require("../fw/utils");
+const { sanitizeHtml } = require("../src/views/utils");
 
 function getHtml(req) {
     return (

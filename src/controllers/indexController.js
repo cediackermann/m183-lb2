@@ -1,6 +1,6 @@
-const tasklist = require("./user/tasklist");
-const bgSearch = require("./user/backgroundsearch");
-const { sanitizeHtml } = require("./fw/utils");
+const tasklist = require("../../user/tasklist");
+const bgSearch = require("../../user/backgroundsearch");
+const { sanitizeHtml } = require("../views/utils");
 
 async function getHtml(req) {
   let taskListHtml = await tasklist.html(req);

@@ -25,7 +25,7 @@ async function getHtml(req) {
       };
       window.CSRF_TOKEN = "${token}";
     </script>
-    <script type="module" src="/client-settings.js"></script>
+    <script type="module" src="/js/settings.js"></script>
   `;
 }
 

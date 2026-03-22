@@ -1,4 +1,6 @@
 const escape = require('escape-html');
+const header = require('./partials/header');
+const footer = require('./partials/footer');
 
 function sanitizeHtml(unsafe) {
   if (typeof unsafe !== 'string') {
@@ -9,4 +11,9 @@ function sanitizeHtml(unsafe) {
   return escape(unsafe);
 }
 
-module.exports = { sanitizeHtml };
+async function wrapContent(content, req) {
+  let headerHtml = await header(req);
+  return headerHtml + content + footer;
+}
+
+module.exports = { sanitizeHtml, wrapContent };
