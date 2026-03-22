@@ -22,24 +22,27 @@ async function getHtml(req) {
   await sleep(1000); // this is a long, long search!!
 
   let queryParams = new URLSearchParams({
-    userid: userid,
     terms: terms
   }).toString();
 
   let theUrl = "http://localhost:3000" + provider + "?" + queryParams;
-  let result = await callAPI("GET", theUrl, false);
+  let result = await callAPI("GET", theUrl, false, req);
   return result;
 }
 
-async function callAPI(method, url, data) {
+async function callAPI(method, url, data, req) {
   let noResults = "No results found!";
   let result;
+  let config = {};
+  if (req && req.headers && req.headers.cookie) {
+    config.headers = { Cookie: req.headers.cookie };
+  }
 
   switch (method) {
     case "POST":
       if (data) {
         result = await axios
-          .post(url, data)
+          .post(url, data, config)
           .then((response) => {
             return response.data;
           })
@@ -48,7 +51,7 @@ async function callAPI(method, url, data) {
           });
       } else {
         result = await axios
-          .post(url)
+          .post(url, null, config)
           .then((response) => {
             return response.data;
           })
@@ -60,7 +63,7 @@ async function callAPI(method, url, data) {
     case "PUT":
       if (data) {
         result = await axios
-          .put(url, data)
+          .put(url, data, config)
           .then((response) => {
             return response.data;
           })
@@ -69,7 +72,7 @@ async function callAPI(method, url, data) {
           });
       } else {
         result = await axios
-          .put(url)
+          .put(url, null, config)
           .then((response) => {
             return response.data;
           })
@@ -82,7 +85,7 @@ async function callAPI(method, url, data) {
       if (data) url = url + "?" + querystring.stringify(data);
 
       result = await axios
-        .get(url)
+        .get(url, config)
         .then((response) => {
           return response.data;
         })
