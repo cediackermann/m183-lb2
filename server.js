@@ -33,7 +33,17 @@ if (!process.env.SESSION_SECRET) {
 }
 
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      "default-src": ["'self'"],
+      "script-src": ["'self'", "'unsafe-inline'", "https://www.gstatic.com", "https://cdnjs.cloudflare.com", "https://apis.google.com"],
+      "script-src-attr": ["'unsafe-inline'"],
+      "style-src": ["'self'", "'unsafe-inline'"],
+      "img-src": ["'self'", "data:", "https://www.gstatic.com"],
+      "connect-src": ["'self'", "https://www.googleapis.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://*.firebaseio.com"],
+      "frame-src": ["'self'", "https://*.firebaseapp.com"],
+    },
+  },
 }));
 
 app.use(urlencoded({ extended: true }));

@@ -43,10 +43,10 @@ export async function authSync(req, res, next) {
 export async function isAdmin(req) {
   if (!activeUserSession(req)) return false;
 
-  const query = "SELECT roleID FROM permissions WHERE userID =?";
+  const query = "SELECT 1 FROM permissions WHERE userID = ? AND roleID = 1";
   const result = await executeStatement(query, [req.session.userid]);
 
-  return result.length > 0 && result[0].roleID === 1;
+  return result.length > 0;
 }
 
 export default {

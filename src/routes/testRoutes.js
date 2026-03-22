@@ -8,7 +8,7 @@ router.get('/users', async (req, res) => {
   let html = await wrapContent(await userList(req, '/test/users/role'), req);
   res.send(`
     <div style="background: #ffecb3; padding: 10px; border: 1px solid #ffe082; margin-bottom: 20px; border-radius: 4px;">
-      <strong>⚠️ TEST MODE:</strong> This page allows anyone to manage user roles for debugging purposes.
+      <strong>TEST MODE:</strong> This page allows anyone to manage user roles for debugging purposes.
     </div>
     ${html}
   `);

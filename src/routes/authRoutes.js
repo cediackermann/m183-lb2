@@ -42,7 +42,7 @@ router.post('/auth-sync', async (req, res) => {
   }
 });
 
-router.get('/logout', (req, res) => {
+router.post('/logout', (req, res) => {
   if (req.session) req.session.destroy();
   res.clearCookie('connect.sid');
   res.clearCookie('token');
@@ -64,6 +64,10 @@ router.get('/logout', (req, res) => {
     </script>
     Logging out...
   `);
+});
+
+router.get('/logout', (req, res) => {
+  res.redirect('/');
 });
 
 export default router;

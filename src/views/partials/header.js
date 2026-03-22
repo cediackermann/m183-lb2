@@ -8,8 +8,22 @@ export default async function header(req) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TBZ 'Secure' App</title>
     <link rel="stylesheet" href="/css/style.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.1/jquery.validate.min.js"></script>
+    <style>
+        .logout-btn {
+            background: none;
+            border: none;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            font-family: inherit;
+            font-size: inherit;
+            display: block;
+        }
+        .logout-btn:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -27,6 +41,7 @@ export default async function header(req) {
       roleid = stmt[0].roleid;
     }
 
+    const csrfToken = req.csrfToken ? req.csrfToken() : "";
     content += `
         <nav>
             <ul>
@@ -38,7 +53,12 @@ export default async function header(req) {
     content += `
                 <li><a href="/test/users" style="color:red; font-weight:bold;">TEST: Manage Roles</a></li>
                 <li><a href="/settings">Settings</a></li>
-                <li><a href="/logout">Logout</a></li>
+                <li>
+                    <form action="/logout" method="POST" style="display:inline;">
+                        <input type="hidden" name="_csrf" value="${csrfToken}" />
+                        <button type="submit" class="logout-btn">Logout</button>
+                    </form>
+                </li>
             </ul>
         </nav>`;
   }

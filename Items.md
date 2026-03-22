@@ -24,6 +24,8 @@
 
    [x] Stored XSS in Search: search/v2/index.js returns unsanitized row.title and row.state
 
+   [x] Reflected XSS: User profile page (/profile) displays unsanitized username (userRoutes.js)
+
 2. Broken Access Control & Session Management
 
    [x] Missing Access Control: No server-side checks for admin routes (app.js)
@@ -41,6 +43,12 @@
    [x] CSRF (Cross-Site Request Forgery): Missing CSRF tokens across all forms.
 
    [x] Bruteforce / Rate Limiting: No protection against bruteforce attacks on the /login route.
+
+   [x] Insecure Test Route: /test/users allows unauthorized role management (testRoutes.js)
+
+   [x] CSRF on Logout: Logout functionality uses POST and lacks CSRF protection (authRoutes.js)
+
+   [x] Privilege Escalation: isAdmin only checks the first role returned from DB (authMiddleware.js)
 
 3. Broken Cryptography & Data Exposure
 
