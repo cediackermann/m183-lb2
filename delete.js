@@ -3,7 +3,7 @@ const { sanitizeHtml } = require("./fw/utils");
 
 async function getHtml(req) {
   let html = "";
-  let taskId = req.query.id;
+  let taskId = req.body.id;
   let userid = req.session.userid;
 
   if (taskId !== undefined && taskId.length !== 0) {

@@ -10,8 +10,8 @@ async function getHtml(req) {
 
   if (req.query.id !== undefined) {
     taskId = req.query.id;
-    const query = "select ID, title, state from tasks where ID = ?"
-    let result = await db.executeStatement(query, [taskId]);
+    const query = "select ID, title, state from tasks where ID = ? AND UserID = ?"
+    let result = await db.executeStatement(query, [taskId, req.session.userid]);
     if (result.length > 0) {
       title = result[0].title;
       state = result[0].state;

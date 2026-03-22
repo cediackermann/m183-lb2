@@ -6,4 +6,4 @@ services:
     expose:
       - "3306"
     environment:
-      - MARIADB_ROOT_PASSWORD=Some.Real.Secr3t
+      - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}

@@ -7,6 +7,8 @@ services:
     user: "node"
     working_dir: /home/node/app
     container_name: m183-lb2-web
+    env_file:
+      - .env
     environment:
       - DBSERVER=m183-lb2-db
       - NODE_ENV=production
@@ -17,3 +19,5 @@ services:
         source: ./
         target: /home/node/app
     command: "npm start"
+    depends_on:
+      - db

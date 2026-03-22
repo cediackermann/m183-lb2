@@ -242,7 +242,7 @@ app.post("/savetask", async (req, res) => {
 });
 
 // delete task
-app.get("/delete", async (req, res) => {
+app.post("/delete", async (req, res) => {
   if (activeUserSession(req)) {
     let html = await wrapContent(await deleteTask.html(req), req);
     res.send(html);
@@ -253,14 +253,22 @@ app.get("/delete", async (req, res) => {
 
 // search
 app.post("/search", async (req, res) => {
-  let html = await search.html(req);
-  res.send(html);
+  if (activeUserSession(req)) {
+    let html = await search.html(req);
+    res.send(html);
+  } else {
+    res.status(401).send("Unauthorized");
+  }
 });
 
 // search provider
 app.get("/search/v2/", async (req, res) => {
-  let result = await searchProvider.search(req);
-  res.send(result);
+  if (activeUserSession(req)) {
+    let result = await searchProvider.search(req);
+    res.send(result);
+  } else {
+    res.status(401).send("Unauthorized");
+  }
 });
 
 // Server starten

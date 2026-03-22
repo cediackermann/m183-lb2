@@ -5,15 +5,13 @@ const { sanitizeHtml } = require("./fw/utils");
 async function getHtml(req) {
   let taskListHtml = await tasklist.html(req);
   return (
-    `<h2>Welcome, ` +
-    sanitizeHtml(req.session.username) +
-    `!</h2>` +
-    sanitizeHtml(taskListHtml) +
-    "<hr />" +
-    bgSearch.html(req)
+      `<h2>Welcome, ` +
+      sanitizeHtml(req.session.username) +
+      `!</h2>` +
+      taskListHtml +
+      "<hr />" +
+      bgSearch.html(req)
   );
 }
 
-module.exports = {
-  html: getHtml,
-};
+module.exports = { html: getHtml };

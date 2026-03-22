@@ -1,16 +1,12 @@
-const createDOMPurify = require("dompurify");
-const { JSDOM } = require("jsdom");
-
-const window = new JSDOM("").window;
-const DOMPurify = createDOMPurify(window);
+const escape = require('escape-html');
 
 function sanitizeHtml(unsafe) {
-  if (typeof unsafe !== "string") {
+  if (typeof unsafe !== 'string') {
     unsafe = String(unsafe !== null && unsafe !== undefined ? unsafe : "");
   }
-  return DOMPurify.sanitize(unsafe);
+
+  // This handles the "Big 5" dangerous characters perfectly
+  return escape(unsafe);
 }
 
-module.exports = {
-  sanitizeHtml
-};
+module.exports = { sanitizeHtml };

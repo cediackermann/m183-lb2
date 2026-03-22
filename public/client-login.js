@@ -170,17 +170,24 @@ window.enrollMfa = async function () {
 
 window.finalizeMfa = function () {
   const code = document.getElementById('enroll-code').value;
+  const errorMsg = document.getElementById('error-msg');
   const assertion = TotpMultiFactorGenerator.assertionForEnrollment(window.currentTotpSecret, code);
-  multiFactor(currentUser).enroll(assertion, 'TOTP Authenticator').then(() => {
-    document.getElementById('qr-code-container').innerHTML = '';
-    document.getElementById('error-msg').style.color = 'green';
-    document.getElementById('error-msg').innerText = 'MFA successfully enrolled! Redirecting...';
-    document.getElementById('mfa-enroll-btn').style.display = 'none';
-    setTimeout(() => window.location.assign('/'), 2000);
-  }).catch((e) => {
-    document.getElementById('error-msg').style.color = 'red';
-    document.getElementById('error-msg').innerText = e.message;
-  });
+  multiFactor(currentUser).enroll(assertion, 'TOTP Authenticator')
+      .then(() => {
+        document.getElementById('qr-code-container').innerHTML = '';
+        errorMsg.style.color = 'green';
+        errorMsg.innerText = 'MFA successfully enrolled! Redirecting...';
+        document.getElementById('mfa-enroll-btn').style.display = 'none';
+        setTimeout(() => window.location.assign('/'), 2000);
+      })
+      .catch((error) => {
+        errorMsg.style.color = 'red';
+        if (error.code === 'auth/requires-recent-login') {
+          errorMsg.innerText = "Security Timeout: Please log out and log back in to finish setting up MFA.";
+        } else {
+          errorMsg.innerText = "Error: " + error.message;
+        }
+      });
 };
 
 onAuthStateChanged(auth, (user) => {

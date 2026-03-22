@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Datenbank: `m183_lb2`
 --
-CREATE Database m183_lb2;
+CREATE Database IF NOT EXISTS m183_lb2;
 USE m183_lb2;
 
 -- --------------------------------------------------------

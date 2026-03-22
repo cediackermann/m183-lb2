@@ -2,11 +2,11 @@ const db = require("../../fw/db");
 const { sanitizeHtml } = require("../../fw/utils");
 
 async function search(req) {
-  if (req.query.userid === undefined || req.query.terms === undefined) {
+  if (!req.session || !req.session.userid || req.query.terms === undefined) {
     return "Not enough information to search";
   }
 
-  let userid = req.query.userid;
+  let userid = req.session.userid;
   let terms = req.query.terms;
   let result = "";
 
