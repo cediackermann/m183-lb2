@@ -22,14 +22,4 @@ Detached: `docker compose up -d`
 
 ## Users
 
-Admin
-
-username: `admin1`
-
-password: `Awesome.Pass34`
-
-User
-
-username: `user1`
-
-password: `Amazing.Pass23`
+The verification mail may be in the spam folder.
