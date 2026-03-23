@@ -52,8 +52,11 @@ export default async function header(req) {
             content += `
                 <li><a href="/admin/users">User List</a></li>`;
         }
+        if (process.env.ENVIRONMENT === 'dev') {
+            content += `
+                <li><a href="/test/users" style="color:red; font-weight:bold;">TEST: Manage Roles</a></li>`;
+        }
         content += `
-                <li><a href="/test/users" style="color:red; font-weight:bold;">TEST: Manage Roles</a></li>
                 <li><a href="/settings">Settings</a></li>
                 <li>
                     <form action="/logout" method="POST" style="display:inline;">
