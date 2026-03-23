@@ -25,6 +25,10 @@
    [x] Stored XSS in Search: search/v2/index.js returns unsanitized row.title and row.state
 
    [x] Reflected XSS: User profile page (/profile) displays unsanitized username (userRoutes.js)
+   
+   [x] State Injection / Parameter Tampering: Added strict server-side validation for allowed task states (savetask.js)
+
+   [x] Improper Output Handling (XSS): Replaced aggressive data-destroying HTML stripping with secure HTML entity escaping (fw/utils.js)   
 
 2. Broken Access Control & Session Management
 
@@ -75,6 +79,8 @@
    [x] Disabled CSP: Content Security Policy enabled in Helmet config (server.js)
 
    [x] Vulnerable Library: Upgraded jQuery to secure version 3.7.1 (header.js)
+
+   [x] Excessive Attack Surface: Removed unnecessary, heavy DOM-emulation dependencies (JSDOM/DOMPurify) for simple text escaping (fw/utils.js)
 
 5. Error Handling & Reliability
 
