@@ -20,15 +20,15 @@ export async function taskList(req) {
     const csrfToken = req.csrfToken ? req.csrfToken() : "";
     html += `
             <tr>
-                <td>${row.ID}</td>
+                <td>${sanitizeHtml(row.ID)}</td>
                 <td class="wide">${sanitizeHtml(row.title)}</td>
                 <td>${sanitizeHtml(ucfirst(row.state))}</td>
                 <td>
-                    <a href="edit?id=${row.ID}">edit</a> | 
+                    <a href="edit?id=${sanitizeHtml(row.ID)}">edit</a> | 
                     
-                    <form action="delete" method="POST" style="display:inline;" onsubmit="return confirm('Delete task?')">
+                    <form action="delete" method="POST" style="display:inline;" class="delete-task-form">
                        <input type="hidden" name="_csrf" value="${csrfToken}" />
-                       <input type="hidden" name="id" value="${row.ID}" />
+                       <input type="hidden" name="id" value="${sanitizeHtml(row.ID)}" />
                        <button type="submit" style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer; padding:0; font-family:inherit; font-size:inherit;">delete</button>
                     </form>
                 </td>
@@ -37,6 +37,15 @@ export async function taskList(req) {
 
   html += `
         </table>
+        <script nonce="${req.nonce}">
+          document.addEventListener('submit', function(e) {
+            if (e.target && e.target.classList.contains('delete-task-form')) {
+              if (!confirm('Delete task?')) {
+                e.preventDefault();
+              }
+            }
+          });
+        </script>
     </section>`;
 
   return html;

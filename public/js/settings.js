@@ -6,18 +6,32 @@ import {
     onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-const app = initializeApp(window.FIREBASE_CONFIG);
-const auth = getAuth(app);
+let auth;
 let currentUser = null;
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        currentUser = user;
-        checkMfaStatus();
-    } else {
-        document.getElementById('mfa-status').innerText = 'You must be logged into Firebase to change settings.';
-    }
-});
+async function init() {
+    const response = await fetch('/api/firebase-config');
+    const firebaseConfig = await response.json();
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUser = user;
+            checkMfaStatus();
+        } else {
+            document.getElementById('mfa-status').innerText = 'You must be logged into Firebase to change settings.';
+        }
+    });
+
+    const enrollBtn = document.getElementById('enroll-mfa-btn');
+    if (enrollBtn) enrollBtn.addEventListener('click', enrollMfa);
+
+    const disableBtn = document.getElementById('disable-mfa-btn');
+    if (disableBtn) disableBtn.addEventListener('click', disableMfa);
+}
+
+init();
 
 function checkMfaStatus() {
     const enrolledSession = multiFactor(currentUser);
@@ -33,7 +47,7 @@ function checkMfaStatus() {
     }
 }
 
-window.disableMfa = function () {
+function disableMfa() {
     const errorMsg = document.getElementById('error-msg');
     const userMultifactor = multiFactor(currentUser);
     const factors = userMultifactor.enrolledFactors;
@@ -49,9 +63,9 @@ window.disableMfa = function () {
         errorMsg.style.color = 'red';
         errorMsg.innerText = e.message;
     });
-};
+}
 
-window.enrollMfa = async function () {
+async function enrollMfa() {
     const errorMsg = document.getElementById('error-msg');
     if (!currentUser) return;
 
@@ -73,7 +87,14 @@ window.enrollMfa = async function () {
         const qrContainer = document.getElementById('qr-code-container');
         qrContainer.style.display = 'block';
         window.currentTotpSecret = secret;
-        qrContainer.innerHTML = "<h4>Scan this QR code with Google Authenticator or Authy</h4><div id='qr'></div><br><input type='text' id='enroll-code' placeholder='Enter Code'><button type='button' onclick='finalizeMfa()'>Finalize Setup</button>";
+        qrContainer.innerHTML = "<h4>Scan this QR code with Google Authenticator or Authy</h4><div id='qr'></div><br><input type='text' id='enroll-code' placeholder='Enter Code'>";
+        
+        const finalizeBtn = document.createElement('button');
+        finalizeBtn.type = 'button';
+        finalizeBtn.innerText = 'Finalize Setup';
+        finalizeBtn.addEventListener('click', finalizeMfa);
+        qrContainer.appendChild(finalizeBtn);
+
         new QRCode(document.getElementById('qr'), secret.generateQrCodeUrl('cedi-app', currentUser.email));
         errorMsg.style.color = 'blue';
         errorMsg.innerText = 'Use your Authenticator App to scan the code below.';
@@ -82,9 +103,9 @@ window.enrollMfa = async function () {
         errorMsg.style.color = 'red';
         errorMsg.innerText = e.message;
     });
-};
+}
 
-window.finalizeMfa = function () {
+function finalizeMfa() {
     const code = document.getElementById('enroll-code').value;
     const assertion = TotpMultiFactorGenerator.assertionForEnrollment(window.currentTotpSecret, code);
     multiFactor(currentUser).enroll(assertion, 'TOTP Authenticator').then(() => {
@@ -96,4 +117,4 @@ window.finalizeMfa = function () {
         document.getElementById('error-msg').style.color = 'red';
         document.getElementById('error-msg').innerText = e.message;
     });
-};
+}

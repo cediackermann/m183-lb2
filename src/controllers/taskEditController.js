@@ -62,7 +62,7 @@ export async function taskEdit(req) {
             <input id="submit" type="submit" class="btn size-auto" value="Submit" />
         </div>
     </form>
-    <script>
+    <script nonce="${req.nonce}">
         $(document).ready(function () {
         $('#form').validate({
             rules: {

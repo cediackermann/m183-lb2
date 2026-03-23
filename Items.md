@@ -30,6 +30,10 @@
 
    [x] Improper Output Handling (XSS): Replaced aggressive data-destroying HTML stripping with secure HTML entity escaping (fw/utils.js)   
 
+   [x] XSS: Systematic risk of XSS due to manual HTML string concatenation in all controllers
+
+   [x] XSS: Authentication token cookie is accessible to JavaScript (missing HttpOnly flag), facilitating token theft (login.js)
+
 2. Broken Access Control & Session Management
 
    [x] Missing Access Control: No server-side checks for admin routes (app.js)
@@ -54,6 +58,8 @@
 
    [x] Privilege Escalation: isAdmin only checks the first role returned from DB (authMiddleware.js)
 
+   [x] Session Hijacking: User session cookies are forwarded during internal API calls in search, increasing SSRF impact (searchController.js)
+
 3. Broken Cryptography & Data Exposure
 
    [x] Plaintext Passwords: Stored unencrypted in the database (login.js)
@@ -65,6 +71,8 @@
    [x] Information Disclosure: Sensitive info in console.log (index.js, tasklist.js)
 
    [x] Hardcoded DB Credentials: Hardcoded password and user in config.js
+
+   [x] Sensitive Data Exposure: Firebase API keys and environment configuration injected into client-side scripts (authRoutes.js, userController.js)
 
 4. System & Infrastructure Security
 
@@ -81,6 +89,10 @@
    [x] Vulnerable Library: Upgraded jQuery to secure version 3.7.1 (header.js)
 
    [x] Excessive Attack Surface: Removed unnecessary, heavy DOM-emulation dependencies (JSDOM/DOMPurify) for simple text escaping (fw/utils.js)
+
+   [x] Vulnerable Library: Use of deprecated and unmaintained `csurf` middleware for CSRF protection (server.js)
+
+   [x] Security Misconfiguration: Content Security Policy (CSP) is too permissive, allowing `'unsafe-inline'` scripts and weakening XSS protection (server.js)
 
 5. Error Handling & Reliability
 

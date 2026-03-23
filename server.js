@@ -2,7 +2,8 @@ import express, { urlencoded, json } from 'express';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import csrf from 'csurf';
+import { csrfSync } from 'csrf-sync';
+import crypto from 'crypto';
 import { config } from 'dotenv';
 config();
 import path, { dirname } from 'path';
@@ -32,19 +33,25 @@ if (!process.env.SESSION_SECRET) {
   throw new Error('Missing session secret');
 }
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      "default-src": ["'self'"],
-      "script-src": ["'self'", "'unsafe-inline'", "https://www.gstatic.com", "https://cdnjs.cloudflare.com", "https://apis.google.com"],
-      "script-src-attr": ["'unsafe-inline'"],
-      "style-src": ["'self'", "'unsafe-inline'"],
-      "img-src": ["'self'", "data:", "https://www.gstatic.com"],
-      "connect-src": ["'self'", "https://www.googleapis.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://*.firebaseio.com"],
-      "frame-src": ["'self'", "https://*.firebaseapp.com"],
+app.use((req, res, next) => {
+  const nonce = crypto.randomBytes(16).toString('base64');
+  res.locals.nonce = nonce;
+  req.nonce = nonce;
+
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        "default-src": ["'self'"],
+        "script-src": ["'self'", `'nonce-${nonce}'`, "https://www.gstatic.com", "https://cdnjs.cloudflare.com", "https://apis.google.com"],
+        "script-src-attr": ["'self'", `'nonce-${nonce}'`],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "img-src": ["'self'", "data:", "https://www.gstatic.com"],
+        "connect-src": ["'self'", "https://www.googleapis.com", "https://identitytoolkit.googleapis.com", "https://securetoken.googleapis.com", "https://*.firebaseio.com"],
+        "frame-src": ["'self'", "https://*.firebaseapp.com"],
+      },
     },
-  },
-}));
+  })(req, res, next);
+});
 
 app.use(urlencoded({ extended: true }));
 app.use(json());
@@ -67,8 +74,15 @@ app.use(
   })
 );
 
-const csrfProtection = csrf();
-app.use(csrfProtection);
+const { csrfSynchronisedProtection, generateToken } = csrfSync({
+  getTokenFromRequest: (req) => req.body._csrf || req.query._csrf || req.headers['csrf-token']
+});
+
+app.use(csrfSynchronisedProtection);
+app.use((req, res, next) => {
+  req.csrfToken = () => generateToken(req);
+  next();
+});
 
 app.use(authSync);
 

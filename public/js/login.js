@@ -10,14 +10,45 @@ import {
   getMultiFactorResolver
 } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
 
-const app = initializeApp(window.FIREBASE_CONFIG);
-const auth = getAuth(app);
-
+let auth;
 let mode = 'login';
 let mfaResolver = null;
 let currentUser = null;
 
-window.switchTab = function (newMode) {
+async function init() {
+  const response = await fetch('/api/firebase-config');
+  const firebaseConfig = await response.json();
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+
+  onAuthStateChanged(auth, (user) => {
+    if (user && !mfaResolver) {
+      onAuthSuccess(user);
+    }
+  });
+  
+  const submitBtn = document.getElementById('submit-btn');
+  if (submitBtn) submitBtn.disabled = false;
+
+  const tabLogin = document.getElementById('tab-login');
+  if (tabLogin) tabLogin.addEventListener('click', () => switchTab('login'));
+
+  const tabRegister = document.getElementById('tab-register');
+  if (tabRegister) tabRegister.addEventListener('click', () => switchTab('register'));
+
+  const authForm = document.getElementById('auth-form');
+  if (authForm) authForm.addEventListener('submit', handleAuth);
+
+  const enrollBtn = document.getElementById('enroll-mfa-btn');
+  if (enrollBtn) enrollBtn.addEventListener('click', enrollMfa);
+
+  const skipBtn = document.getElementById('skip-btn');
+  if (skipBtn) skipBtn.addEventListener('click', () => window.location.assign('/'));
+}
+
+init();
+
+function switchTab(newMode) {
   mode = newMode;
   document.getElementById('error-msg').innerText = '';
   if (mode === 'register') {
@@ -41,19 +72,18 @@ window.switchTab = function (newMode) {
     document.getElementById('tabs').style.display = 'block';
     document.getElementById('submit-btn').value = 'Login';
   }
-};
+}
 
 function onAuthSuccess(user) {
   currentUser = user;
   user.getIdToken().then(function (idToken) {
-    document.cookie = "token=" + idToken + "; path=/; SameSite=Strict";
     fetch('/auth-sync', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'CSRF-Token': window.CSRF_TOKEN
       },
-      body: JSON.stringify({ uid: user.uid, email: user.email, _csrf: window.CSRF_TOKEN })
+      body: JSON.stringify({ uid: user.uid, email: user.email, _csrf: window.CSRF_TOKEN, idToken: idToken })
     }).then(() => {
       document.getElementById('tabs').style.display = 'none';
       document.getElementById('email-group').style.display = 'none';
@@ -100,8 +130,9 @@ function getFriendlyErrorMessage(error) {
   }
 }
 
-window.handleAuth = function (e) {
+function handleAuth(e) {
   e.preventDefault();
+  if (!auth) return;
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   const errorMsg = document.getElementById('error-msg');
@@ -160,9 +191,9 @@ window.handleAuth = function (e) {
         }
       });
   }
-};
+}
 
-window.enrollMfa = async function () {
+async function enrollMfa() {
   const errorMsg = document.getElementById('error-msg');
   if (!currentUser) return;
 
@@ -184,7 +215,14 @@ window.enrollMfa = async function () {
     const qrContainer = document.getElementById('qr-code-container');
     qrContainer.style.display = 'block';
     window.currentTotpSecret = secret;
-    qrContainer.innerHTML = "<h4>Scan this QR code with Google Authenticator or Authy</h4><div id='qr'></div><br><input type='text' id='enroll-code' placeholder='Enter Code'><button type='button' onclick='finalizeMfa()'>Finalize Setup</button>";
+    
+    qrContainer.innerHTML = "<h4>Scan this QR code with Google Authenticator or Authy</h4><div id='qr'></div><br><input type='text' id='enroll-code' placeholder='Enter Code'>";
+    const finalizeBtn = document.createElement('button');
+    finalizeBtn.type = 'button';
+    finalizeBtn.innerText = 'Finalize Setup';
+    finalizeBtn.addEventListener('click', finalizeMfa);
+    qrContainer.appendChild(finalizeBtn);
+
     new QRCode(document.getElementById('qr'), secret.generateQrCodeUrl('cedi-app', currentUser.email));
     errorMsg.style.color = 'blue';
     errorMsg.innerText = 'Use your Authenticator App to scan the code below.';
@@ -192,9 +230,9 @@ window.enrollMfa = async function () {
     errorMsg.style.color = 'red';
     errorMsg.innerText = getFriendlyErrorMessage(e);
   });
-};
+}
 
-window.finalizeMfa = function () {
+function finalizeMfa() {
   const code = document.getElementById('enroll-code').value;
   const errorMsg = document.getElementById('error-msg');
   const assertion = TotpMultiFactorGenerator.assertionForEnrollment(window.currentTotpSecret, code);
@@ -214,10 +252,4 @@ window.finalizeMfa = function () {
         errorMsg.innerText = "Error: " + getFriendlyErrorMessage(error);
       }
     });
-};
-
-onAuthStateChanged(auth, (user) => {
-  if (user && !mfaResolver) {
-    onAuthSuccess(user);
-  }
-});
+}

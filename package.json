@@ -11,7 +11,7 @@
     "axios": "^1.13.6",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
-    "csurf": "^1.2.2",
+    "csrf-sync": "^4.2.1",
     "dompurify": "^3.3.3",
     "dotenv": "^17.3.1",
     "escape-html": "^1.0.3",

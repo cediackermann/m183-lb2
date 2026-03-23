@@ -24,10 +24,16 @@ router.post('/login', loginLimiter, async (req, res) => {
 });
 
 router.post('/auth-sync', async (req, res) => {
-  if (!req.session.loggedin || !req.session.userid) {
+  const idToken = req.body.idToken;
+  if (idToken) {
+    res.cookie('token', idToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
+  }
+
+  const uid = req.body.uid || req.session.userid;
+  if (!uid) {
     return res.status(401).send('Unauthorized');
   }
-  const uid = req.session.userid;
+
   let email = req.body.email || 'user@example.com';
   try {
     const existing = await executeStatement('SELECT id FROM users WHERE id=?', [uid]);
@@ -47,20 +53,27 @@ router.post('/logout', (req, res) => {
   res.clearCookie('connect.sid');
   res.clearCookie('token');
   res.send(`
-    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
-    <script type="text/javascript">
-      const firebaseConfig = {
-        apiKey: "${process.env.NEXT_PUBLIC_FIREBASE_API_KEY}",
-        authDomain: "${process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}",
-        projectId: "${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}"
-      };
-      const app = firebase.initializeApp(firebaseConfig);
-      firebase.auth().signOut().then(() => {
-        window.location.href = "/login";
-      }).catch(() => {
-        window.location.href = "/login";
-      });
+    <script type="text/javascript" nonce="${req.nonce}">
+      fetch('/api/firebase-config')
+        .then(response => response.json())
+        .then(config => {
+          const scriptApp = document.createElement('script');
+          scriptApp.src = "https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js";
+          document.head.appendChild(scriptApp);
+          scriptApp.onload = () => {
+            const scriptAuth = document.createElement('script');
+            scriptAuth.src = "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js";
+            document.head.appendChild(scriptAuth);
+            scriptAuth.onload = () => {
+              firebase.initializeApp(config);
+              firebase.auth().signOut().then(() => {
+                window.location.href = "/login";
+              }).catch(() => {
+                window.location.href = "/login";
+              });
+            };
+          };
+        });
     </script>
     Logging out...
   `);

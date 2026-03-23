@@ -21,7 +21,7 @@ export function backgroundSearch(req) {
         <div id="msg" class="hidden">The search is running. Results will be visible soon.</div>
         <div id="result" class="hidden"></div>
     </div>
-    <script>
+    <script nonce="` + req.nonce + `">
         $(document).ready(function () {
         $('#form').validate({
             rules: {
