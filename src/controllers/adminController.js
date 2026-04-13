@@ -27,7 +27,7 @@ export async function userList(req, actionUrl = "/admin/users/role") {
         <td>${sanitizeHtml(record.username)}</td>
         <td>${sanitizeHtml(record.title)}</td>
         <td>
-          <form action="${actionUrl}" method="POST" style="display:inline;">
+          <form action="${actionUrl}" method="POST" class="inline-form">
             <input type="hidden" name="userID" value="${sanitizeHtml(record.ID.toString())}">
             <input type="hidden" name="roleID" value="${record.title === 'Admin' ? 2 : 1}">
             <input type="hidden" name="_csrf" value="${csrfToken}">

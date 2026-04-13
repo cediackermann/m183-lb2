@@ -38,12 +38,12 @@ function checkMfaStatus() {
     const enrolled = enrolledSession.enrolledFactors;
     if (enrolled.length > 0) {
         document.getElementById('mfa-status').innerHTML = '<strong>MFA is Enabled</strong>';
-        document.getElementById('mfa-disable-btn').style.display = 'block';
-        document.getElementById('mfa-enroll-btn').style.display = 'none';
+        document.getElementById('mfa-disable-btn').classList.remove('hidden');
+        document.getElementById('mfa-enroll-btn').classList.add('hidden');
     } else {
         document.getElementById('mfa-status').innerHTML = '<strong>MFA is Disabled</strong>';
-        document.getElementById('mfa-enroll-btn').style.display = 'block';
-        document.getElementById('mfa-disable-btn').style.display = 'none';
+        document.getElementById('mfa-enroll-btn').classList.remove('hidden');
+        document.getElementById('mfa-disable-btn').classList.add('hidden');
     }
 }
 
@@ -56,11 +56,11 @@ function disableMfa() {
         promises.push(userMultifactor.unenroll(f));
     });
     Promise.all(promises).then(() => {
-        document.getElementById('error-msg').style.color = 'green';
-        document.getElementById('error-msg').innerText = 'MFA successfully disabled!';
+        errorMsg.className = 'error-msg success status-message';
+        errorMsg.innerText = 'MFA successfully disabled!';
         checkMfaStatus();
     }).catch((e) => {
-        errorMsg.style.color = 'red';
+        errorMsg.className = 'error-msg error status-message';
         errorMsg.innerText = e.message;
     });
 }
@@ -76,7 +76,7 @@ async function enrollMfa() {
     }
 
     if (!currentUser.emailVerified) {
-        errorMsg.style.color = 'red';
+        errorMsg.className = 'error-msg error status-message';
         errorMsg.innerText = 'Please verify your email first before enrolling in MFA. Check your inbox and reload the page.';
         return;
     }
@@ -85,10 +85,10 @@ async function enrollMfa() {
         return TotpMultiFactorGenerator.generateSecret(session);
     }).then((secret) => {
         const qrContainer = document.getElementById('qr-code-container');
-        qrContainer.style.display = 'block';
+        qrContainer.classList.remove('hidden');
         window.currentTotpSecret = secret;
         qrContainer.innerHTML = "<h4>Scan this QR code with Google Authenticator or Authy</h4><div id='qr'></div><br><input type='text' id='enroll-code' placeholder='Enter Code'>";
-        
+
         const finalizeBtn = document.createElement('button');
         finalizeBtn.type = 'button';
         finalizeBtn.innerText = 'Finalize Setup';
@@ -96,25 +96,26 @@ async function enrollMfa() {
         qrContainer.appendChild(finalizeBtn);
 
         new QRCode(document.getElementById('qr'), secret.generateQrCodeUrl('cedi-app', currentUser.email));
-        errorMsg.style.color = 'blue';
+        errorMsg.className = 'error-msg info status-message';
         errorMsg.innerText = 'Use your Authenticator App to scan the code below.';
-        document.getElementById('mfa-enroll-btn').style.display = 'none';
+        document.getElementById('mfa-enroll-btn').classList.add('hidden');
     }).catch((e) => {
-        errorMsg.style.color = 'red';
+        errorMsg.className = 'error-msg error status-message';
         errorMsg.innerText = e.message;
     });
 }
 
 function finalizeMfa() {
     const code = document.getElementById('enroll-code').value;
+    const errorMsg = document.getElementById('error-msg');
     const assertion = TotpMultiFactorGenerator.assertionForEnrollment(window.currentTotpSecret, code);
     multiFactor(currentUser).enroll(assertion, 'TOTP Authenticator').then(() => {
         document.getElementById('qr-code-container').innerHTML = '';
-        document.getElementById('error-msg').style.color = 'green';
-        document.getElementById('error-msg').innerText = 'MFA successfully enrolled!';
+        errorMsg.className = 'error-msg success status-message';
+        errorMsg.innerText = 'MFA successfully enrolled!';
         checkMfaStatus();
     }).catch((e) => {
-        document.getElementById('error-msg').style.color = 'red';
-        document.getElementById('error-msg').innerText = e.message;
+        errorMsg.className = 'error-msg error status-message';
+        errorMsg.innerText = e.message;
     });
 }

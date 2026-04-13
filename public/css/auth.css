@@ -1,0 +1,65 @@
+.auth-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.tab-btn {
+  margin-right: 10px;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.active-tab {
+  font-weight: bold;
+  border-bottom: 2px solid #000;
+}
+
+.error-msg {
+  margin-bottom: 10px;
+}
+
+.error-msg.error {
+  color: red;
+}
+
+.error-msg.success {
+  color: green;
+}
+
+.error-msg.info {
+  color: blue;
+}
+
+.hidden {
+  display: none;
+}
+
+.mfa-section {
+  margin-top: 15px;
+}
+
+.inline-form {
+  display: inline;
+}
+
+.test-warning {
+  background: #ffecb3;
+  padding: 10px;
+  border: 1px solid #ffe082;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.test-link {
+  color: red;
+  font-weight: bold;
+}
+
+.settings-section {
+  margin-bottom: 20px;
+}
+
+.status-message {
+  margin-top: 10px;
+}

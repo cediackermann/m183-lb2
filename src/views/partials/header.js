@@ -10,22 +10,6 @@ export default async function header(req) {
     <link rel="stylesheet" href="/css/style.css" />
     <script nonce="${req.nonce}" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script nonce="${req.nonce}" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
-    <style>
-        .logout-btn {
-            background: none;
-            border: none;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            font-family: inherit;
-            font-size: inherit;
-            display: block;
-        }
-        .logout-btn:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -54,12 +38,12 @@ export default async function header(req) {
         }
         if (process.env.ENVIRONMENT === 'dev') {
             content += `
-                <li><a href="/test/users" style="color:red; font-weight:bold;">TEST: Manage Roles</a></li>`;
+                <li><a href="/test/users" class="test-link">TEST: Manage Roles</a></li>`;
         }
         content += `
                 <li><a href="/settings">Settings</a></li>
                 <li>
-                    <form action="/logout" method="POST" style="display:inline;">
+                    <form action="/logout" method="POST" class="inline-form">
                         <input type="hidden" name="_csrf" value="${csrfToken}" />
                         <button type="submit" class="logout-btn">Logout</button>
                     </form>

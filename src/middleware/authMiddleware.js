@@ -19,6 +19,8 @@ export async function authSync(req, res, next) {
       req.session.loggedin = true;
       req.session.userid = decodedToken.uid;
       req.session.username = decodedToken.email;
+      // T-08: Track whether MFA was used during this authentication
+      req.session.mfaVerified = !!(decodedToken.firebase?.sign_in_second_factor);
     } catch (err) {
       req.session.loggedin = false;
       delete req.session.userid;
@@ -45,8 +47,12 @@ export async function isAdmin(req) {
 
   const query = "SELECT 1 FROM permissions WHERE userID = ? AND roleID = 1";
   const result = await executeStatement(query, [req.session.userid]);
+  if (result.length === 0) return false;
 
-  return result.length > 0;
+  // T-08: Require MFA for admin-level access
+  if (!req.session.mfaVerified) return false;
+
+  return true;
 }
 
 export default {

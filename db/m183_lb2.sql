@@ -108,6 +108,10 @@ ALTER TABLE `users`
 ALTER TABLE `permissions`
   MODIFY `ID` bigint(20) NOT NULL AUTO_INCREMENT;
 
+-- T-10: Enforce referential integrity between permissions.roleID and roles.ID
+ALTER TABLE `permissions`
+  ADD CONSTRAINT `fk_permissions_role` FOREIGN KEY (`roleID`) REFERENCES `roles` (`ID`);
+
 --
 -- AUTO_INCREMENT für Tabelle `tasks`
 --

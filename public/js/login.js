@@ -54,22 +54,22 @@ function switchTab(newMode) {
   if (mode === 'register') {
     document.getElementById('tab-register').classList.add('active-tab');
     document.getElementById('tab-login').classList.remove('active-tab');
-    document.getElementById('confirm-group').style.display = 'block';
+    document.getElementById('confirm-group').classList.remove('hidden');
     document.getElementById('confirm-password').required = true;
-    document.getElementById('mfa-group').style.display = 'none';
-    document.getElementById('email-group').style.display = 'block';
-    document.getElementById('password-group').style.display = 'block';
-    document.getElementById('tabs').style.display = 'block';
+    document.getElementById('mfa-group').classList.add('hidden');
+    document.getElementById('email-group').classList.remove('hidden');
+    document.getElementById('password-group').classList.remove('hidden');
+    document.getElementById('tabs').classList.remove('hidden');
     document.getElementById('submit-btn').value = 'Register';
   } else {
     document.getElementById('tab-login').classList.add('active-tab');
     document.getElementById('tab-register').classList.remove('active-tab');
-    document.getElementById('confirm-group').style.display = 'none';
+    document.getElementById('confirm-group').classList.add('hidden');
     document.getElementById('confirm-password').required = false;
-    document.getElementById('mfa-group').style.display = 'none';
-    document.getElementById('email-group').style.display = 'block';
-    document.getElementById('password-group').style.display = 'block';
-    document.getElementById('tabs').style.display = 'block';
+    document.getElementById('mfa-group').classList.add('hidden');
+    document.getElementById('email-group').classList.remove('hidden');
+    document.getElementById('password-group').classList.remove('hidden');
+    document.getElementById('tabs').classList.remove('hidden');
     document.getElementById('submit-btn').value = 'Login';
   }
 }
@@ -85,20 +85,21 @@ function onAuthSuccess(user) {
       },
       body: JSON.stringify({ uid: user.uid, email: user.email, _csrf: window.CSRF_TOKEN, idToken: idToken })
     }).then(() => {
-      document.getElementById('tabs').style.display = 'none';
-      document.getElementById('email-group').style.display = 'none';
-      document.getElementById('password-group').style.display = 'none';
-      document.getElementById('confirm-group').style.display = 'none';
-      document.getElementById('submit-btn').style.display = 'none';
+      const errorMsg = document.getElementById('error-msg');
+      document.getElementById('tabs').classList.add('hidden');
+      document.getElementById('email-group').classList.add('hidden');
+      document.getElementById('password-group').classList.add('hidden');
+      document.getElementById('confirm-group').classList.add('hidden');
+      document.getElementById('submit-btn').classList.add('hidden');
       if (mode === 'login') {
-        document.getElementById('error-msg').style.color = 'green';
-        document.getElementById('error-msg').innerText = 'Logged in successfully! Redirecting...';
+        errorMsg.className = 'error-msg success';
+        errorMsg.innerText = 'Logged in successfully! Redirecting...';
         window.location.assign('/');
       } else {
-        document.getElementById('error-msg').style.color = 'green';
-        document.getElementById('error-msg').innerText = 'Account created! You can now configure MFA or continue.';
-        document.getElementById('mfa-enroll-btn').style.display = 'block';
-        document.getElementById('continue-btn').style.display = 'block';
+        errorMsg.className = 'error-msg success';
+        errorMsg.innerText = 'Account created! You can now configure MFA or continue.';
+        document.getElementById('mfa-enroll-btn').classList.remove('hidden');
+        document.getElementById('continue-btn').classList.remove('hidden');
       }
     });
   });
@@ -136,7 +137,7 @@ function handleAuth(e) {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   const errorMsg = document.getElementById('error-msg');
-  errorMsg.style.color = 'red';
+  errorMsg.className = 'error-msg error';
   errorMsg.innerText = '';
 
   if (mfaResolver) {
@@ -179,11 +180,11 @@ function handleAuth(e) {
       .catch((error) => {
         if (error.code === 'auth/multi-factor-auth-required') {
           mfaResolver = getMultiFactorResolver(auth, error);
-          document.getElementById('mfa-group').style.display = 'block';
+          document.getElementById('mfa-group').classList.remove('hidden');
           document.getElementById('totp-code').required = true;
-          document.getElementById('email-group').style.display = 'none';
-          document.getElementById('password-group').style.display = 'none';
-          document.getElementById('tabs').style.display = 'none';
+          document.getElementById('email-group').classList.add('hidden');
+          document.getElementById('password-group').classList.add('hidden');
+          document.getElementById('tabs').classList.add('hidden');
           document.getElementById('submit-btn').value = 'Verify TOTP Code';
           errorMsg.innerText = 'Multi-Factor Authentication required.';
         } else {
@@ -204,7 +205,7 @@ async function enrollMfa() {
   }
 
   if (!currentUser.emailVerified) {
-    errorMsg.style.color = 'red';
+    errorMsg.className = 'error-msg error';
     errorMsg.innerText = 'Please verify your email first before enrolling in MFA. Check your inbox.';
     return;
   }
@@ -213,9 +214,9 @@ async function enrollMfa() {
     return TotpMultiFactorGenerator.generateSecret(session);
   }).then((secret) => {
     const qrContainer = document.getElementById('qr-code-container');
-    qrContainer.style.display = 'block';
+    qrContainer.classList.remove('hidden');
     window.currentTotpSecret = secret;
-    
+
     qrContainer.innerHTML = "<h4>Scan this QR code with Google Authenticator or Authy</h4><div id='qr'></div><br><input type='text' id='enroll-code' placeholder='Enter Code'>";
     const finalizeBtn = document.createElement('button');
     finalizeBtn.type = 'button';
@@ -224,10 +225,10 @@ async function enrollMfa() {
     qrContainer.appendChild(finalizeBtn);
 
     new QRCode(document.getElementById('qr'), secret.generateQrCodeUrl('cedi-app', currentUser.email));
-    errorMsg.style.color = 'blue';
+    errorMsg.className = 'error-msg info';
     errorMsg.innerText = 'Use your Authenticator App to scan the code below.';
   }).catch((e) => {
-    errorMsg.style.color = 'red';
+    errorMsg.className = 'error-msg error';
     errorMsg.innerText = getFriendlyErrorMessage(e);
   });
 }
@@ -239,13 +240,13 @@ function finalizeMfa() {
   multiFactor(currentUser).enroll(assertion, 'TOTP Authenticator')
     .then(() => {
       document.getElementById('qr-code-container').innerHTML = '';
-      errorMsg.style.color = 'green';
+      errorMsg.className = 'error-msg success';
       errorMsg.innerText = 'MFA successfully enrolled! Redirecting...';
-      document.getElementById('mfa-enroll-btn').style.display = 'none';
+      document.getElementById('mfa-enroll-btn').classList.add('hidden');
       setTimeout(() => window.location.assign('/'), 2000);
     })
     .catch((error) => {
-      errorMsg.style.color = 'red';
+      errorMsg.className = 'error-msg error';
       if (error.code === 'auth/requires-recent-login') {
         errorMsg.innerText = "Security Timeout: Please log out and log back in to finish setting up MFA.";
       } else {

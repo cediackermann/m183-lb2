@@ -149,3 +149,39 @@ hr {
 #msg {
   font-weight: bold;
 }
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  font-family: inherit;
+  font-size: inherit;
+  display: block;
+}
+
+.logout-btn:hover {
+  text-decoration: underline;
+}
+
+.test-link {
+  color: red;
+  font-weight: bold;
+}
+
+.inline-form {
+  display: inline;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+}

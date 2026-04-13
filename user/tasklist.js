@@ -24,12 +24,12 @@ export async function taskList(req) {
                 <td class="wide">${sanitizeHtml(row.title)}</td>
                 <td>${sanitizeHtml(ucfirst(row.state))}</td>
                 <td>
-                    <a href="edit?id=${sanitizeHtml(row.ID)}">edit</a> | 
-                    
-                    <form action="delete" method="POST" style="display:inline;" class="delete-task-form">
+                    <a href="edit?id=${sanitizeHtml(row.ID)}">edit</a> |
+
+                    <form action="delete" method="POST" class="inline-form delete-task-form">
                        <input type="hidden" name="_csrf" value="${csrfToken}" />
                        <input type="hidden" name="id" value="${sanitizeHtml(row.ID)}" />
-                       <button type="submit" style="background:none; border:none; color:blue; text-decoration:underline; cursor:pointer; padding:0; font-family:inherit; font-size:inherit;">delete</button>
+                       <button type="submit" class="delete-btn">delete</button>
                     </form>
                 </td>
             </tr>`;
