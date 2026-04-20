@@ -7,7 +7,7 @@ export function activeUserSession(req) {
 }
 
 export async function authSync(req, res, next) {
-  const token = req.cookies.token;
+  const token = req.cookies ? req.cookies.token : null;
   if (token) {
     try {
       if (getApps().length === 0) {
@@ -32,13 +32,6 @@ export async function authSync(req, res, next) {
     delete req.session.username;
   }
 
-  if (req.session && req.session.loggedin) {
-    req.cookies.userid = req.session.userid;
-    req.cookies.username = req.session.username;
-  } else {
-    delete req.cookies.userid;
-    delete req.cookies.username;
-  }
   next();
 }
 

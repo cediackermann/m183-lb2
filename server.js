@@ -71,8 +71,8 @@ app.use((req, res, next) => {
 
 app.use(urlencoded({ extended: true }));
 app.use(json());
-app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
 
 const sessionStore = new MySQLStore({
   ...dbConfig,
@@ -107,11 +107,13 @@ const { csrfSynchronisedProtection, generateToken } = csrfSync({
     req.body._csrf || req.query._csrf || req.headers["csrf-token"],
 });
 
-app.use(csrfSynchronisedProtection);
 app.use((req, res, next) => {
   req.csrfToken = () => generateToken(req);
   next();
 });
+
+// Apply CSRF protection to all POST/PUT/DELETE requests
+app.use(csrfSynchronisedProtection);
 
 app.use(authSync);
 

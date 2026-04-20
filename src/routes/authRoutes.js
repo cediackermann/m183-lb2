@@ -56,7 +56,8 @@ router.post('/auth-sync', authSyncLimiter, async (req, res) => {
   const uid = decodedToken.uid;
   const email = decodedToken.email || 'user@example.com';
 
-  res.cookie('token', idToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' });
+  const isProd = process.env.ENVIRONMENT === 'prod' || process.env.NODE_ENV === 'production';
+  res.cookie('token', idToken, { httpOnly: true, secure: isProd, sameSite: 'strict' });
 
   try {
     const existing = await executeStatement('SELECT id FROM users WHERE id=?', [uid]);
@@ -69,18 +70,18 @@ router.post('/auth-sync', authSyncLimiter, async (req, res) => {
     const sessionData = { loggedin: true, userid: uid, username: email };
     req.session.regenerate((err) => {
       if (err) {
-        auditLog('AUTH_SYNC_FAILED', uid, 'Session regeneration error');
+        auditLog('AUTH_SYNC_FAILED', uid);
         return res.status(500).send('Error syncing user');
       }
       req.session.loggedin = sessionData.loggedin;
       req.session.userid = sessionData.userid;
       req.session.username = sessionData.username;
-      auditLog('AUTH_SYNC_SUCCESS', uid, email);
+      auditLog('AUTH_SYNC_SUCCESS', uid);
       res.status(200).send('Synced');
     });
   } catch (err) {
     console.error(err);
-    auditLog('AUTH_SYNC_FAILED', uid, 'Database error');
+    auditLog('AUTH_SYNC_FAILED', uid);
     res.status(500).send('Error syncing user');
   }
 });

@@ -84,8 +84,15 @@ function onAuthSuccess(user) {
         'CSRF-Token': window.CSRF_TOKEN
       },
       body: JSON.stringify({ uid: user.uid, email: user.email, _csrf: window.CSRF_TOKEN, idToken: idToken })
-    }).then(() => {
+    }).then((response) => {
       const errorMsg = document.getElementById('error-msg');
+      if (!response.ok) {
+        response.text().then(text => {
+          errorMsg.className = 'error-msg error';
+          errorMsg.innerText = 'Sync failed: ' + text;
+        });
+        return;
+      }
       document.getElementById('tabs').classList.add('hidden');
       document.getElementById('email-group').classList.add('hidden');
       document.getElementById('password-group').classList.add('hidden');
@@ -101,6 +108,10 @@ function onAuthSuccess(user) {
         document.getElementById('mfa-enroll-btn').classList.remove('hidden');
         document.getElementById('continue-btn').classList.remove('hidden');
       }
+    }).catch(err => {
+      const errorMsg = document.getElementById('error-msg');
+      errorMsg.className = 'error-msg error';
+      errorMsg.innerText = 'Network error during sync: ' + err.message;
     });
   });
 }

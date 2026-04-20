@@ -43,7 +43,6 @@ export async function taskEdit(req) {
 
     for (let i = 0; i < options.length; i++) {
         let selected = state === options[i].toLowerCase() ? "selected" : "";
-        html += `<span>` + options[1] + `</span>`;
         html +=
             `<option value='` +
             sanitizeHtml(options[i].toLowerCase()) +
