@@ -6,6 +6,7 @@ The following AI tools were utilized in this project:
 
 - **Gemini CLI (Antigravity Agent):** Primarily used for codebase analysis, refactoring, and automated fixing of security vulnerabilities.
 - **Gemini Web / ChatGPT / Claude:** Used for supplementary explanations of protocol standards (e.g., CSRF details) and for validating security concepts.
+- **Claude Code (Anthropic):** Used for static code review of another group's project as part of the penetration testing phase. Also used to implement easy but long tasks li
 
 ## How and Where was AI applied?
 
@@ -21,7 +22,11 @@ The AI assisted in locating and efficiently implementing the security requiremen
 - **T-07 (Audit Logging):** Creation and integration of `auditLogger.js`.
 - **T-09 (CSP):** Generation of the `helmet` configuration using dynamic nonces.
 
-### 3. Data Privacy Cleanup (PII)
+### 3. Static Security Review of Code
+
+Claude Code was used to conduct a white-box static analysis of another group's Node.js/Express application. The AI systematically reviewed authentication flows, session handling, access control logic, and configuration files to identify security vulnerabilities — mirroring a manual code audit but at higher speed and coverage.
+
+### 4. Data Privacy Cleanup (PII)
 
 Based on AI recommendations, sensitive data (email addresses) was removed from the audit logs to comply with data protection regulations (GDPR).
 
@@ -30,6 +35,7 @@ Based on AI recommendations, sensitive data (email addresses) was removed from t
 ### Why was AI used?
 
 - **Efficiency in Repetitive Tasks:** Searching for patterns (e.g., all `T-xx` comments) across multiple files is manually error-prone. The AI completes this task in seconds with full coverage.
+- **Cross-Codebase Review:** Reviewing an unfamiliar codebase for security issues benefits from AI assistance, as it can trace data flows across files (e.g., from route handler to controller to database query) without losing context.
 - **Complexity Management:** The interaction between session regeneration, CSRF tokens, and Firebase Auth is complex. The AI served as a "sparring partner" to more quickly understand side effects (such as the redirect loop).
 - **Standardization:** The AI provided idiomatic solution proposals for Express middleware that align with industry best practices.
 
